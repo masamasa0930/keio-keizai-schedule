@@ -146,6 +146,26 @@
   .qbtn.minus{border-color:var(--line);color:var(--sub);}
   .qdone{font-size:12px;color:var(--done);font-weight:600;}
 
+  /* ===== コーチの診断 ===== */
+  .advice{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--sub);
+    padding:11px 16px;margin-bottom:8px;font-size:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+  .advice.ok{border-left-color:var(--done);}
+  .advice.info{border-left-color:var(--en);}
+  .advice.warn{border-left-color:var(--es);}
+  .advice.bad{border-left-color:var(--red);}
+  .advice .atxt{flex:1;min-width:200px;}
+  .advice .pri{padding:6px 12px;font-size:12px;white-space:nowrap;}
+  .adjlog{font-size:12px;color:var(--sub);margin:10px 0 0;}
+  .adjlog li{margin:2px 0;}
+  .routelist{list-style:none;margin:0 0 14px;padding:0;font-size:14px;}
+  .routelist li{display:flex;gap:10px;align-items:baseline;padding:7px 0;flex-wrap:wrap;}
+  .routelist li+li{border-top:1px dashed var(--line);}
+  .rphase{flex:none;font-size:11px;padding:1px 8px;letter-spacing:.05em;color:#fff;background:var(--sub);border-radius:2px;}
+  .rphase.p1{background:var(--done);}
+  .rphase.p2{background:var(--en);}
+  .rphase.p3{background:var(--red);}
+  .rdue{margin-left:auto;font-size:12px;color:var(--sub);font-variant-numeric:tabular-nums;white-space:nowrap;}
+
   /* ===== やる気の仕掛け ===== */
   .badges{display:flex;flex-wrap:wrap;gap:8px;}
   .badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:5px 12px;border-radius:20px;letter-spacing:.03em;}
@@ -249,6 +269,11 @@
     <p class="note">ボタンを押すだけで保存。毎日の入力はここだけで完結します。</p>
     <div class="card" id="quick"></div>
 
+    <h2>コーチの診断</h2>
+    <p class="note">参考書のペース・科目バランス・模試の結果から、今やるべき軌道修正を自動で提案します。</p>
+    <div id="coach"></div>
+    <ul class="adjlog" id="adjlog"></ul>
+
     <div class="home-grid">
       <div class="card stat">
         <p class="lbl">連続記録</p>
@@ -340,6 +365,13 @@
 
   <!-- ============ 参考書 ============ -->
   <section class="tab" id="tab-books">
+    <h2>おすすめルート（A方式標準・逆算済み）</h2>
+    <p class="note">試験日2/13から逆算した標準ルートです。一括登録してから、書名や総量・目標日を自分の使う本に合わせて調整してください（不要な本は×で削除）。遅れが出たらホームの「コーチの診断」が修正案を出します。</p>
+    <div class="card">
+      <ul class="routelist" id="routelist"></ul>
+      <button class="pri" id="route-add">このルートを一括登録</button>
+    </div>
+
     <h2>参考書を登録</h2>
     <p class="note">総量（ページ数など）と目標完了日を入れると、1日に必要なペースを自動計算します。</p>
     <div class="card">
@@ -349,7 +381,7 @@
           <select id="b-subj"><option value="en">英語</option><option value="ma">数学</option><option value="es">小論文</option><option value="ot">その他</option></select></div>
         <div class="f"><label for="b-total">総量</label><input type="number" id="b-total" min="1" style="width:90px" placeholder="320"></div>
         <div class="f"><label for="b-unit">単位</label>
-          <select id="b-unit"><option>ページ</option><option>問</option><option>章</option><option>講</option><option>長文</option></select></div>
+          <select id="b-unit"><option>ページ</option><option>問</option><option>章</option><option>講</option><option>長文</option><option>年分</option></select></div>
         <div class="f"><label for="b-due">目標完了日</label><input type="date" id="b-due"></div>
         <button class="pri" id="b-save">追加</button>
       </div>
@@ -464,7 +496,7 @@
 /* ============ データ ============ */
 const KEY = "keio-econ-2027";
 const store = Object.assign(
-  {checked:{}, custom:{}, weekly:{}, study:{}, mocks:[], schools:[], books:[]},
+  {checked:{}, custom:{}, weekly:{}, study:{}, mocks:[], schools:[], books:[], adjustLog:[]},
   JSON.parse(localStorage.getItem(KEY) || "{}")
 );
 function save(){ localStorage.setItem(KEY, JSON.stringify(store)); }
@@ -1172,6 +1204,145 @@ function renderCal(){
   for(let i=totalCells; i%7!==0; i++){ const c=document.createElement("div"); c.className="c out"; cal.append(c); }
 }
 
+/* ============ おすすめルート（A方式標準） ============ */
+const ROUTE = [
+  {name:"英単語帳（例：ターゲット1900）", subj:"en", total:1900, unit:"問", due:"2026-08-31", phase:"基礎", pc:"p1"},
+  {name:"英文法・語法問題集", subj:"en", total:300, unit:"問", due:"2026-08-31", phase:"基礎", pc:"p1"},
+  {name:"数学 網羅系問題集（例：青チャート例題）", subj:"ma", total:300, unit:"問", due:"2026-09-30", phase:"基礎", pc:"p1"},
+  {name:"英語長文問題集", subj:"en", total:30, unit:"長文", due:"2026-10-31", phase:"応用", pc:"p2"},
+  {name:"小論文の書き方＋演習", subj:"es", total:150, unit:"ページ", due:"2026-10-31", phase:"応用", pc:"p2"},
+  {name:"数学 実戦演習（微積・確率・数列）", subj:"ma", total:150, unit:"問", due:"2026-11-30", phase:"応用", pc:"p2"},
+  {name:"自由英作文対策", subj:"en", total:60, unit:"ページ", due:"2026-11-30", phase:"応用", pc:"p2"},
+  {name:"過去問（英数小論セット）", subj:"ot", total:10, unit:"年分", due:"2027-02-05", phase:"直前", pc:"p3"}
+];
+
+function renderRoute(){
+  const ul = document.getElementById("routelist");
+  ul.innerHTML = "";
+  ROUTE.forEach(r=>{
+    const li = document.createElement("li");
+    const ph = document.createElement("span"); ph.className = "rphase "+r.pc; ph.textContent = r.phase;
+    const nm = document.createElement("span"); nm.textContent = r.name+"（全"+r.total+r.unit+"）";
+    const due = document.createElement("span"); due.className = "rdue";
+    due.textContent = fmtMD(r.due)+"までに";
+    li.append(ph, nm, due);
+    ul.append(li);
+  });
+}
+document.getElementById("route-add").addEventListener("click", ()=>{
+  let added = 0;
+  ROUTE.forEach(r=>{
+    if(store.books.some(b=>b.name===r.name)) return;
+    store.books.push({name:r.name, subj:r.subj, total:r.total, unit:r.unit, due:r.due, entries:[]});
+    added++;
+  });
+  if(added) logAdjust("おすすめルート"+added+"冊を一括登録");
+  save(); renderBooks(); renderHome();
+});
+
+/* ============ コーチの診断 ============ */
+function logAdjust(text){
+  store.adjustLog.unshift({date:ymd(today0()), text});
+  store.adjustLog = store.adjustLog.slice(0, 20);
+}
+
+function renderCoach(){
+  const box = document.getElementById("coach");
+  box.innerHTML = "";
+  const items = [];
+  const t = today0();
+
+  // 1) 記録が止まっていないか
+  const dates = allRecordDates();
+  if(!dates.size){
+    items.push({lv:"info", text:"記録を始めると、ここに毎日の診断と軌道修正の提案が出ます。まずはホームの＋ボタンから。"});
+  } else {
+    let gap = 0; const d = new Date(t);
+    while(gap < 14 && !dates.has(ymd(d))){ gap++; d.setDate(d.getDate()-1); }
+    if(gap >= 2) items.push({lv:"warn", text:"記録が"+gap+"日止まっています。ペース診断が狂うので、まず今日の分を記録しましょう。"});
+  }
+
+  // 2) 参考書ごとの遅れ診断とリスケ提案
+  store.books.forEach(b=>{
+    const c = bookCalc(b);
+    if(c.remaining===0) return;
+    const ceiling = b.unit==="年分" ? "2027-02-10" : "2027-01-31"; // 参考書は1月末まで、過去問は2/10まで
+    if(c.dl <= 0){
+      items.push({lv:"bad", text:"「"+b.name+"」が目標日を過ぎています（残り"+c.remaining+b.unit+"）。目標日を引き直しましょう。",
+        action: c.proj && ymd(c.proj)<=ceiling ? {label:"目標日を"+fmtMD(ymd(c.proj))+"に変更", fn:()=>{
+          logAdjust("「"+b.name+"」目標日 "+fmtMD(b.due)+" → "+fmtMD(ymd(c.proj))+"（期限超過のため再逆算）");
+          b.due = ymd(c.proj); save(); renderBooks(); renderHome();
+        }} : null});
+    } else if(c.status==="late" && c.proj){
+      const projStr = ymd(c.proj);
+      if(projStr <= ceiling){
+        items.push({lv:"warn",
+          text:"「"+b.name+"」が予定より遅れ気味。今のペースだと完了は"+fmtYMD(projStr)+"。①1日"+Math.ceil(c.req||0)+b.unit+"に上げて"+fmtMD(b.due)+"を守る／②目標日を後ろ倒す、のどちらかを選びましょう。",
+          action:{label:"②目標日を"+fmtMD(projStr)+"に変更", fn:()=>{
+            logAdjust("「"+b.name+"」目標日 "+fmtMD(b.due)+" → "+fmtMD(projStr)+"（実績ペースに合わせ再逆算）");
+            b.due = projStr; save(); renderBooks(); renderHome();
+          }}});
+      } else {
+        items.push({lv:"bad",
+          text:"「"+b.name+"」は今のペースだと完了が"+fmtYMD(projStr)+"になり、間に合いません。後ろ倒しではなく、1日"+Math.ceil(c.req||0)+b.unit+"に上げるか、範囲を絞る（頻出分野だけ・2周目は間違えた問題のみ等）決断を。"});
+      }
+    }
+  });
+
+  // 3) 同一科目の並行しすぎ
+  const bySubj = {};
+  store.books.forEach(b=>{ const c=bookCalc(b); if(c.remaining>0) bySubj[b.subj]=(bySubj[b.subj]||0)+1; });
+  Object.entries(bySubj).forEach(([s,n])=>{
+    if(n>=4) items.push({lv:"info", text:SUBJNAME[s]+"の参考書が"+n+"冊並行中。同時進行は2〜3冊までに絞ると完走率が上がります。"});
+  });
+
+  // 4) 科目バランス（直近14日・合計10時間以上で判定）
+  let en=0, ma=0, es=0, tot=0;
+  for(let i=0;i<14;i++){ const d=new Date(t); d.setDate(d.getDate()-i);
+    const r=store.study[ymd(d)]; if(r){ en+=r.en||0; ma+=r.ma||0; es+=r.es||0; tot+=sumRec(r); } }
+  if(tot >= 10){
+    if(en/tot < 0.35) items.push({lv:"warn", text:"直近2週間の英語比率が"+Math.round(100*en/tot)+"%。英語は配点最大（200/420）なので4割前後を推奨します。"});
+    if(ma/tot < 0.25) items.push({lv:"warn", text:"直近2週間の数学比率が"+Math.round(100*ma/tot)+"%。数学マークは足切り対象なので3割前後はキープを。"});
+    const month = t.getMonth()+1;
+    if((month>=9 || month<=1) && es/tot < 0.05)
+      items.push({lv:"info", text:"小論文の学習時間がほぼゼロです。9月〜本番は週1本書いて添削を受けるサイクルを。"});
+  }
+
+  // 5) 模試
+  const lastMock = [...store.mocks].filter(x=>x.tt!=null).pop();
+  if(lastMock){
+    if(lastMock.tt >= 68) items.push({lv:"ok", text:"直近模試 総合偏差値"+lastMock.tt+"。合格圏。過去問での得点力に軸足を移してOK。"});
+    else if(lastMock.tt >= 60) items.push({lv:"info", text:"直近模試 総合偏差値"+lastMock.tt+"。あと一段。低い方の科目の演習量を1.5倍にして次の模試で偏差値68+を狙いましょう。"});
+    else items.push({lv:"warn", text:"直近模試 総合偏差値"+lastMock.tt+"。焦って過去問に行かず、基礎の抜け（単語・網羅系）を先に埋めるのが結局最短です。"});
+  }
+
+  // 6) すべて順調
+  if(!items.some(i=>i.lv==="warn"||i.lv==="bad")){
+    items.push({lv:"ok", text:"大きな問題なし。今日のノルマを淡々と積み上げましょう。"});
+  }
+
+  items.forEach(it=>{
+    const div = document.createElement("div"); div.className = "advice "+it.lv;
+    const tx = document.createElement("span"); tx.className = "atxt"; tx.textContent = it.text;
+    div.append(tx);
+    if(it.action){
+      const bt = document.createElement("button"); bt.className = "pri"; bt.textContent = it.action.label;
+      bt.addEventListener("click", it.action.fn);
+      div.append(bt);
+    }
+    box.append(div);
+  });
+
+  // 調整履歴（直近3件）
+  const log = document.getElementById("adjlog");
+  log.innerHTML = "";
+  store.adjustLog.slice(0,3).forEach(l=>{
+    const li = document.createElement("li");
+    li.textContent = fmtMD(l.date)+"　"+l.text;
+    log.append(li);
+  });
+}
+
 /* ============ ワンタップ記録（ホーム） ============ */
 const QSUBJ = [["en","英語"],["ma","数学"],["es","小論文"],["ot","その他"]];
 
@@ -1322,15 +1493,17 @@ function renderHome(){
   document.getElementById("h-next-date").textContent = next ? fmtYMD(next.date)+"（あと"+days(next.date)+"日）" : "";
 
   renderQuick();
+  renderCoach();
 }
 
 /* ============ リセット・初期描画 ============ */
 document.getElementById("reset").addEventListener("click", ()=>{
   if(confirm("チェック・週間計画・参考書・学習記録・模試・併願校をすべて削除します。よろしいですか？")){
-    Object.assign(store, {checked:{}, custom:{}, weekly:{}, study:{}, mocks:[], schools:[], books:[]});
+    Object.assign(store, {checked:{}, custom:{}, weekly:{}, study:{}, mocks:[], schools:[], books:[], adjustLog:[]});
     save(); renderPlan(); renderWeek(); renderBooks(); renderStudy(); renderMocks(); renderSchools(); renderHome();
   }
 });
 
+renderRoute();
 renderPlan(); renderWeek(); renderBooks(); renderStudy(); renderMocks(); renderSchools(); renderHome();
 </script>
