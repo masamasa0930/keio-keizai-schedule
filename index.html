@@ -371,7 +371,9 @@
   <!-- ============ 参考書 ============ -->
   <section class="tab" id="tab-books">
     <h2>きみ専用ルート（手持ちの参考書で逆算済み）</h2>
-    <p class="note">手持ちの参考書を、試験日2/13から逆算した順番・期限で並べたルートです。「一括登録」を押せば準備完了。総量（語数・ページ数）は概算なので、実物と違ったら×で削除→正しい数で登録し直してOK。遅れが出たらホームの「コーチの診断」が修正案を出します。</p>
+    <p class="note">手持ちの参考書を、試験日2/13から逆算した順番・期限で並べたルートです。「一括登録」を押せば準備完了。総量（語数・ページ数）は概算なので、実物と違ったら×で削除→正しい数で登録し直してOK。遅れが出たらホームの「コーチの診断」が修正案を出します。<br>
+    <strong>※印は同時並行ペア</strong>（インプットで学んだことをアウトプットですぐ使う）。<br>
+    <strong>辞書枠（ノルマ管理しない本）</strong>：数研教科書＝定義の確認用、マスターキー＝1対1の1周目後から並行して原則確認、真・英文法大全＝通読後は文法辞書。詰まったら戻る本なので、毎日のノルマには入れません。</p>
     <div class="card">
       <ul class="routelist" id="routelist"></ul>
       <button class="pri" id="route-add">このルートを一括登録</button>
@@ -535,12 +537,13 @@ const PLAN = [
   {id:"2026-07", name:"2026年 7月", theme:"英語の土台づくり最優先（1日12h・英語6h）", tasks:[
     "LEAP Basicを7月中に完成（1日44語＋翌日に前日分を復習）",
     "「動画でわかる英文法 読解入門編」を7月中に1周",
-    "数研教科書の章末総ざらいを8/10までに（1日8問ペース）",
+    "1対1 数ⅠAを開始（教科書は定義確認の辞書、演習は1対1に一本化）",
     "1日12hのリズムを固定（目安：英語6h・数学4h・復習他2h）",
     "夏の記述模試・慶大系模試に申し込む"
   ]},
   {id:"2026-08", name:"2026年 8月", theme:"MARCHレベル完成月間", tasks:[
-    "入門英文問題精講→essentials語法100で解釈の土台を完成",
+    "入門英文問題精講とRules1・2を並行（学んだ構文をすぐ長文で使う。Rules1から）",
+    "essentials語法100・前置詞で理屈のインプットを完成",
     "LEAP本体を毎日進める（英文で出会った単語を覚え直す）",
     "1対1 数ⅠAを8月末までに完走（確率は特に丁寧に）",
     "8月末チェックポイント：MARCH過去問（英語・数学 各1年分）で6割を確認",
@@ -1216,31 +1219,29 @@ function renderCal(){
 const ROUTE = [
   {name:"LEAP Basic（改訂版）【イン】", subj:"en", total:1000, unit:"語", due:"2026-07-31", phase:"基礎", pc:"p1"},
   {name:"動画でわかる英文法 読解入門編【イン】", subj:"en", total:250, unit:"ページ", due:"2026-07-31", phase:"基礎", pc:"p1"},
-  {name:"数研出版 教科書 章末問題 総ざらい（ⅠA・ⅡBC）", subj:"ma", total:240, unit:"問", due:"2026-08-10", phase:"基礎", pc:"p1"},
-  {name:"入門英文問題精講", subj:"en", total:72, unit:"問", due:"2026-08-20", phase:"基礎", pc:"p1"},
+  {name:"入門英文問題精講【イン】※Rules1・2と並行", subj:"en", total:72, unit:"問", due:"2026-08-31", phase:"基礎", pc:"p1"},
+  {name:"The Rules 長文 1・2【アウト】※精講と並行・Rules1から", subj:"en", total:24, unit:"長文", due:"2026-08-31", phase:"基礎", pc:"p1"},
   {name:"the essentials 語法必須英文100【イン】", subj:"en", total:100, unit:"問", due:"2026-08-31", phase:"基礎", pc:"p1"},
   {name:"前置詞最強の教科書【イン】", subj:"en", total:250, unit:"ページ", due:"2026-08-31", phase:"基礎", pc:"p1"},
   {name:"1対1対応の演習 数Ⅰ・A（例題＋演習）", subj:"ma", total:210, unit:"問", due:"2026-08-31", phase:"基礎", pc:"p1"},
-  {name:"英文解釈ポラリス1", subj:"en", total:50, unit:"問", due:"2026-09-15", phase:"応用", pc:"p2"},
   {name:"LEAP（改訂版・本体）【イン】", subj:"en", total:1400, unit:"語", due:"2026-09-30", phase:"基礎", pc:"p1"},
-  {name:"The Rules 長文 1・2【イン】", subj:"en", total:24, unit:"長文", due:"2026-09-30", phase:"応用", pc:"p2"},
-  {name:"マスターキー（河野玄斗・数学 解法原則）", subj:"ma", total:300, unit:"ページ", due:"2026-09-30", phase:"応用", pc:"p2"},
-  {name:"英文解釈ポラリス2", subj:"en", total:50, unit:"問", due:"2026-10-15", phase:"応用", pc:"p2"},
+  {name:"英文解釈ポラリス1【イン】※長文ポラリス1と並行", subj:"en", total:50, unit:"問", due:"2026-09-30", phase:"応用", pc:"p2"},
+  {name:"英語長文ポラリス1【アウト】※解釈ポラリス1と並行", subj:"en", total:12, unit:"長文", due:"2026-09-30", phase:"応用", pc:"p2"},
   {name:"1対1対応の演習 数Ⅱ（例題＋演習）", subj:"ma", total:170, unit:"問", due:"2026-10-15", phase:"応用", pc:"p2"},
+  {name:"英文解釈ポラリス2【イン】※長文ポラリス2と並行", subj:"en", total:50, unit:"問", due:"2026-10-31", phase:"応用", pc:"p2"},
+  {name:"英語長文ポラリス2【アウト】※解釈ポラリス2と並行", subj:"en", total:12, unit:"長文", due:"2026-10-31", phase:"応用", pc:"p2"},
   {name:"速読英熟語（改訂版）【イン】", subj:"en", total:60, unit:"章", due:"2026-10-31", phase:"基礎", pc:"p1"},
   {name:"速読英単語 必修編（改訂第8版）【アウト】", subj:"en", total:70, unit:"章", due:"2026-10-31", phase:"応用", pc:"p2"},
-  {name:"英語長文ポラリス1【アウト】", subj:"en", total:12, unit:"長文", due:"2026-10-31", phase:"応用", pc:"p2"},
   {name:"ハッとめざめる確率 第2版", subj:"ma", total:300, unit:"ページ", due:"2026-10-31", phase:"応用", pc:"p2"},
   {name:"小論文の書き方＋演習", subj:"es", total:150, unit:"ページ", due:"2026-10-31", phase:"応用", pc:"p2"},
-  {name:"The Rules 長文 3・4【イン】", subj:"en", total:24, unit:"長文", due:"2026-11-15", phase:"応用", pc:"p2"},
   {name:"1対1対応の演習 数B・C（数列・ベクトル中心）", subj:"ma", total:150, unit:"問", due:"2026-11-15", phase:"応用", pc:"p2"},
+  {name:"The Rules 長文 3・4【イン】※長文ポラリス3と並行", subj:"en", total:24, unit:"長文", due:"2026-11-30", phase:"応用", pc:"p2"},
+  {name:"英語長文ポラリス3【アウト】※Rules3・4と並行", subj:"en", total:12, unit:"長文", due:"2026-11-30", phase:"応用", pc:"p2"},
   {name:"イディオムマスター（まる暗記ゼロ）【イン】", subj:"en", total:300, unit:"ページ", due:"2026-11-30", phase:"応用", pc:"p2"},
   {name:"英検準1級 単熟語EX【イン】", subj:"en", total:1400, unit:"語", due:"2026-11-30", phase:"応用", pc:"p2"},
   {name:"真・英文法大全（通読→以降は辞書）【イン】", subj:"en", total:900, unit:"ページ", due:"2026-11-30", phase:"応用", pc:"p2"},
-  {name:"英語長文ポラリス2【アウト】", subj:"en", total:12, unit:"長文", due:"2026-11-30", phase:"応用", pc:"p2"},
   {name:"自由英作文対策（1冊選定）", subj:"en", total:60, unit:"ページ", due:"2026-11-30", phase:"応用", pc:"p2"},
   {name:"英文法ポラリス3【アウト】", subj:"en", total:300, unit:"問", due:"2026-12-20", phase:"直前", pc:"p3"},
-  {name:"英語長文ポラリス3【アウト】", subj:"en", total:12, unit:"長文", due:"2026-12-20", phase:"直前", pc:"p3"},
   {name:"速読英単語 上級編（改訂第8版）【アウト】", subj:"en", total:50, unit:"章", due:"2026-12-31", phase:"直前", pc:"p3"},
   {name:"英熟語 最前線1515【イン】", subj:"en", total:1515, unit:"語", due:"2026-12-31", phase:"直前", pc:"p3"},
   {name:"文系数学の良問プラチカ（ⅠAⅡB）", subj:"ma", total:149, unit:"問", due:"2026-12-31", phase:"直前", pc:"p3"},
