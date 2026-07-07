@@ -538,12 +538,14 @@ const PLAN = [
     "LEAP Basicを7月中に完成（1日44語＋翌日に前日分を復習）",
     "「動画でわかる英文法 読解入門編」を7月中に1周",
     "1対1 数ⅠAを開始（教科書は定義確認の辞書、演習は1対1に一本化）",
+    "夜の暗記枠を固定：単語（Basic→本体リレー）＋語法100＋前置詞",
     "1日12hのリズムを固定（目安：英語6h・数学4h・復習他2h）",
     "夏の記述模試・慶大系模試に申し込む"
   ]},
   {id:"2026-08", name:"2026年 8月", theme:"MARCHレベル完成月間", tasks:[
-    "入門英文問題精講とRules1・2を並行（学んだ構文をすぐ長文で使う。Rules1から）",
-    "essentials語法100・前置詞で理屈のインプットを完成",
+    "8月頭にRules1を2題だけ診断→9割読めたらRules2直行、無理ならRules1を高速消化",
+    "入門英文問題精講とRules2を並行（学んだ構文をすぐ長文で使う）",
+    "essentials語法100・前置詞（夜の暗記枠）を8月中に完成",
     "LEAP本体を毎日進める（英文で出会った単語を覚え直す）",
     "1対1 数ⅠAを8月末までに完走（確率は特に丁寧に）",
     "8月末チェックポイント：MARCH過去問（英語・数学 各1年分）で6割を確認",
@@ -1217,14 +1219,14 @@ function renderCal(){
 // 息子さん専用ルート（手持ちの参考書＋慶應経済A方式の逆算）。総量は概算なので実物に合わせて調整OK
 // 【イン】=インプット教材、【アウト】=アウトプット教材
 const ROUTE = [
-  {name:"LEAP Basic（改訂版）【イン】", subj:"en", total:1000, unit:"語", due:"2026-07-31", phase:"基礎", pc:"p1"},
+  {name:"LEAP Basic（改訂版）【イン・夜の暗記枠】", subj:"en", total:1000, unit:"語", due:"2026-07-31", phase:"基礎", pc:"p1"},
   {name:"動画でわかる英文法 読解入門編【イン】", subj:"en", total:250, unit:"ページ", due:"2026-07-31", phase:"基礎", pc:"p1"},
-  {name:"入門英文問題精講【イン】※Rules1・2と並行", subj:"en", total:72, unit:"問", due:"2026-08-31", phase:"基礎", pc:"p1"},
-  {name:"The Rules 長文 1・2【アウト】※精講と並行・Rules1から", subj:"en", total:24, unit:"長文", due:"2026-08-31", phase:"基礎", pc:"p1"},
-  {name:"the essentials 語法必須英文100【イン】", subj:"en", total:100, unit:"問", due:"2026-08-31", phase:"基礎", pc:"p1"},
-  {name:"前置詞最強の教科書【イン】", subj:"en", total:250, unit:"ページ", due:"2026-08-31", phase:"基礎", pc:"p1"},
+  {name:"入門英文問題精講【イン】※Rules2と並行", subj:"en", total:72, unit:"問", due:"2026-08-31", phase:"基礎", pc:"p1"},
+  {name:"The Rules 長文 2【アウト】※精講と並行（Rules1は診断2題→9割読めたら飛ばす）", subj:"en", total:12, unit:"長文", due:"2026-08-31", phase:"基礎", pc:"p1"},
+  {name:"the essentials 語法必須英文100【イン・夜の暗記枠】", subj:"en", total:100, unit:"問", due:"2026-08-31", phase:"基礎", pc:"p1"},
+  {name:"前置詞最強の教科書【イン・夜の暗記枠】", subj:"en", total:250, unit:"ページ", due:"2026-08-31", phase:"基礎", pc:"p1"},
   {name:"1対1対応の演習 数Ⅰ・A（例題＋演習）", subj:"ma", total:210, unit:"問", due:"2026-08-31", phase:"基礎", pc:"p1"},
-  {name:"LEAP（改訂版・本体）【イン】", subj:"en", total:1400, unit:"語", due:"2026-09-30", phase:"基礎", pc:"p1"},
+  {name:"LEAP（改訂版・本体）【イン・夜の暗記枠／Basic完了後にリレー】", subj:"en", total:1400, unit:"語", due:"2026-09-30", phase:"基礎", pc:"p1"},
   {name:"英文解釈ポラリス1【イン】※長文ポラリス1と並行", subj:"en", total:50, unit:"問", due:"2026-09-30", phase:"応用", pc:"p2"},
   {name:"英語長文ポラリス1【アウト】※解釈ポラリス1と並行", subj:"en", total:12, unit:"長文", due:"2026-09-30", phase:"応用", pc:"p2"},
   {name:"1対1対応の演習 数Ⅱ（例題＋演習）", subj:"ma", total:170, unit:"問", due:"2026-10-15", phase:"応用", pc:"p2"},
