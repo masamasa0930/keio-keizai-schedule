@@ -1,0 +1,1336 @@
+<title>慶應経済 逆算スケジュール帳</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root{
+    --ink:#1B2A4A;
+    --red:#C8102E;
+    --paper:#FAFAF8;
+    --sub:#5B6B85;
+    --line:#E4E4DD;
+    --done:#2E7D4F;
+    --card:#FFFFFF;
+    --en:#3D5A99;   /* 英語 */
+    --ma:#C8102E;   /* 数学 */
+    --es:#B8860B;   /* 小論文 */
+    --ot:#8A93A6;   /* その他 */
+    --serif:"Hiragino Mincho ProN","Yu Mincho","YuMincho",serif;
+    --sans:"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic","Meiryo",sans-serif;
+  }
+  html{background:var(--paper);}
+  body{font-family:var(--sans);color:var(--ink);line-height:1.7;margin:0;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:880px;margin:0 auto;padding:32px 20px 80px;}
+
+  /* ===== ヘッダー ===== */
+  header{border-bottom:3px double var(--ink);padding-bottom:20px;margin-bottom:0;}
+  .eyebrow{font-size:12px;letter-spacing:.18em;color:var(--sub);text-transform:uppercase;margin:0 0 4px;}
+  h1{font-family:var(--serif);font-size:clamp(22px,4vw,30px);font-weight:600;margin:0;letter-spacing:.04em;text-wrap:balance;}
+  .hsub{font-size:13px;color:var(--sub);margin:4px 0 0;}
+
+  /* ===== タブ ===== */
+  nav{display:flex;flex-wrap:wrap;gap:0;border-bottom:1px solid var(--line);margin-bottom:28px;position:sticky;top:0;background:var(--paper);z-index:5;}
+  nav button{
+    border:none;background:none;font-family:var(--sans);font-size:14px;color:var(--sub);
+    padding:12px 16px;cursor:pointer;border-bottom:3px solid transparent;letter-spacing:.03em;
+  }
+  nav button:hover{color:var(--ink);}
+  nav button.on{color:var(--ink);font-weight:600;border-bottom-color:var(--red);}
+  nav button:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--ink);outline-offset:1px;}
+  .tab{display:none;}
+  .tab.on{display:block;}
+
+  /* ===== 汎用 ===== */
+  h2{font-family:var(--serif);font-size:19px;font-weight:600;margin:36px 0 6px;letter-spacing:.06em;}
+  h2:first-child{margin-top:0;}
+  h2::before{content:"";display:inline-block;width:14px;height:3px;background:var(--red);vertical-align:middle;margin-right:10px;position:relative;top:-2px;}
+  .note{font-size:13px;color:var(--sub);margin:0 0 16px;}
+  .card{background:var(--card);border:1px solid var(--line);padding:18px 20px;}
+  .tbl-scroll{overflow-x:auto;border:1px solid var(--line);background:var(--card);}
+  table{border-collapse:collapse;width:100%;min-width:540px;font-size:14px;}
+  th,td{padding:11px 13px;text-align:left;border-top:1px solid var(--line);vertical-align:top;}
+  thead th{border-top:none;background:#F2F3EF;font-size:12px;letter-spacing:.08em;color:var(--sub);font-weight:600;}
+  td.d{font-variant-numeric:tabular-nums;white-space:nowrap;font-weight:600;}
+  tr.hon td{background:#FDF3F4;}
+  tr.hon td.d{color:var(--red);}
+  .tag{display:inline-block;font-size:11px;padding:1px 8px;border:1px solid var(--sub);color:var(--sub);border-radius:2px;margin-left:8px;letter-spacing:.05em;vertical-align:1px;}
+  .tag.fix{border-color:var(--done);color:var(--done);}
+  button.pri{border:1px solid var(--ink);background:var(--ink);color:#fff;padding:8px 16px;font-size:13px;cursor:pointer;font-family:var(--sans);letter-spacing:.05em;}
+  button.pri:hover{background:#2A3D63;}
+  button.ghost{border:1px solid var(--line);background:none;color:var(--sub);font-size:12px;padding:4px 12px;cursor:pointer;font-family:var(--sans);}
+  button.ghost:hover{color:var(--ink);border-color:var(--sub);}
+  input,select{border:1px solid var(--line);padding:8px 10px;font-size:14px;font-family:var(--sans);background:var(--paper);color:var(--ink);}
+  .del{border:none;background:none;color:#C4C6BE;font-size:15px;cursor:pointer;padding:0 4px;line-height:1.4;}
+  .del:hover{color:var(--red);}
+
+  /* ===== カウントダウン ===== */
+  .counts{display:flex;flex-wrap:wrap;gap:14px;margin-top:20px;}
+  .count{flex:1 1 170px;background:var(--card);border:1px solid var(--line);padding:14px 16px;}
+  .count.main{background:var(--ink);color:#F5F2EA;border-color:var(--ink);}
+  .count .lbl{font-size:12px;letter-spacing:.08em;opacity:.85;margin:0;}
+  .count .num{font-family:var(--serif);font-size:clamp(28px,4.5vw,40px);line-height:1.15;font-variant-numeric:tabular-nums;margin:2px 0 0;}
+  .count .num small{font-size:14px;font-family:var(--sans);margin-left:4px;}
+  .count.main .num{color:#fff;}
+  .count .date{font-size:12px;color:var(--sub);margin:2px 0 0;}
+  .count.main .date{color:#B9C2D4;}
+
+  /* ホームの今日サマリー */
+  .home-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:16px;}
+  .stat .big{font-family:var(--serif);font-size:26px;font-variant-numeric:tabular-nums;margin:2px 0;}
+  .stat .lbl{font-size:12px;color:var(--sub);letter-spacing:.06em;margin:0;}
+  .stat .sub2{font-size:12px;color:var(--sub);margin:0;}
+
+  /* ===== 月別プラン ===== */
+  .month{background:var(--card);border:1px solid var(--line);margin-bottom:14px;}
+  .month.now{border:2px solid var(--ink);}
+  .mhead{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;padding:14px 18px 10px;border-bottom:1px solid var(--line);}
+  .mhead .mname{font-family:var(--serif);font-size:17px;font-weight:600;letter-spacing:.04em;}
+  .mhead .mtheme{font-size:13px;color:var(--sub);}
+  .mhead .nowtag{font-size:11px;background:var(--ink);color:#fff;padding:2px 8px;letter-spacing:.1em;}
+  .mhead .prog{margin-left:auto;font-size:12px;color:var(--sub);font-variant-numeric:tabular-nums;}
+  .bar{height:3px;background:#EDEEE9;}
+  .bar span{display:block;height:100%;background:var(--done);width:0;transition:width .3s;}
+  .tasks{list-style:none;margin:0;padding:8px 10px;}
+  .tasks li{display:flex;align-items:flex-start;gap:10px;padding:7px 8px;font-size:14px;}
+  .tasks li+li{border-top:1px dashed var(--line);}
+  .tasks input[type=checkbox]{width:17px;height:17px;margin-top:3px;accent-color:var(--done);flex:none;cursor:pointer;}
+  .tasks label{cursor:pointer;flex:1;}
+  .tasks li.done label{color:var(--sub);text-decoration:line-through;text-decoration-color:var(--sub);}
+  .addrow{display:flex;gap:8px;padding:10px 18px 16px;}
+  .addrow input{flex:1;}
+
+  /* ===== 週間計画 ===== */
+  .weeknav{display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap;}
+  .weeknav .wlabel{font-family:var(--serif);font-size:17px;font-weight:600;font-variant-numeric:tabular-nums;}
+  .day{background:var(--card);border:1px solid var(--line);margin-bottom:8px;}
+  .day.today{border-color:var(--ink);border-width:2px;}
+  .dhead{display:flex;align-items:baseline;gap:10px;padding:8px 14px;border-bottom:1px solid var(--line);background:#F7F8F4;}
+  .dhead .dname{font-weight:600;font-size:14px;font-variant-numeric:tabular-nums;}
+  .dhead .sun{color:var(--red);}
+  .dhead .sat{color:var(--en);}
+  .dhead .todaytag{font-size:11px;background:var(--ink);color:#fff;padding:1px 7px;letter-spacing:.08em;}
+  .day .tasks{padding:4px 8px;}
+  .day .addrow{padding:6px 14px 10px;}
+  .day .addrow input{font-size:13px;padding:6px 9px;}
+  .day .addrow button{padding:6px 12px;}
+
+  /* ===== 参考書 ===== */
+  .book{background:var(--card);border:1px solid var(--line);margin-bottom:14px;}
+  .bhead{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 18px 8px;}
+  .bhead .bname{font-family:var(--serif);font-size:16px;font-weight:600;letter-spacing:.03em;}
+  .chip{font-size:11px;color:#fff;padding:1px 8px;border-radius:2px;letter-spacing:.05em;}
+  .pill{font-size:11px;padding:2px 10px;border-radius:2px;letter-spacing:.05em;margin-left:auto;}
+  .pill.ok{background:#E7F2EA;color:var(--done);border:1px solid var(--done);}
+  .pill.late{background:#FDF0F1;color:var(--red);border:1px solid var(--red);}
+  .pill.na{background:#F2F3EF;color:var(--sub);border:1px solid var(--line);}
+  .bar.b6{height:6px;}
+  .bstats{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:1px;background:var(--line);border-top:1px solid var(--line);}
+  .bstats .bs{background:var(--card);padding:8px 12px;}
+  .bstats .bs .k{font-size:11px;color:var(--sub);margin:0;letter-spacing:.04em;}
+  .bstats .bs .v{font-size:15px;font-weight:600;font-variant-numeric:tabular-nums;margin:0;}
+  .bstats .bs .v small{font-size:11px;font-weight:400;color:var(--sub);}
+  .bstats .bs .v.warn{color:var(--red);}
+  .bupdate{display:flex;gap:8px;padding:10px 18px 14px;align-items:center;flex-wrap:wrap;border-top:1px solid var(--line);}
+  .bupdate label{font-size:12px;color:var(--sub);}
+  .bupdate input{width:90px;font-variant-numeric:tabular-nums;}
+  .bupdate .quota-ok{font-size:13px;color:var(--done);font-weight:600;}
+  .bupdate .quota-left{font-size:13px;color:var(--sub);}
+
+  /* ===== ワンタップ記録 ===== */
+  .qgroup+.qgroup{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;}
+  .qtitle{font-size:12px;color:var(--sub);letter-spacing:.08em;margin:0 0 4px;}
+  .qrow{display:flex;align-items:center;gap:8px;padding:7px 0;flex-wrap:wrap;}
+  .qrow+.qrow{border-top:1px dashed var(--line);}
+  .qlab{flex:0 0 auto;min-width:64px;max-width:45%;font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .qval{min-width:64px;font-variant-numeric:tabular-nums;font-size:13px;color:var(--sub);}
+  .qbtn{border:1px solid var(--ink);background:#fff;color:var(--ink);padding:6px 13px;font-size:13px;cursor:pointer;font-family:var(--sans);}
+  .qbtn:hover{background:var(--ink);color:#fff;}
+  .qbtn.minus{border-color:var(--line);color:var(--sub);}
+  .qdone{font-size:12px;color:var(--done);font-weight:600;}
+
+  /* ===== やる気の仕掛け ===== */
+  .badges{display:flex;flex-wrap:wrap;gap:8px;}
+  .badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:5px 12px;border-radius:20px;letter-spacing:.03em;}
+  .badge.got{background:var(--ink);color:#fff;}
+  .badge.no{background:none;border:1px dashed var(--line);color:#B7BAB0;}
+  .hall{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;}
+  .trophy{background:linear-gradient(135deg,#FFFDF5,#FAF3DD);border:1px solid #E3D9B8;padding:16px 18px;position:relative;}
+  .trophy .ticon{font-size:26px;}
+  .trophy .tname{font-family:var(--serif);font-size:15px;font-weight:600;margin:4px 0 2px;}
+  .trophy .tinfo{font-size:12px;color:var(--sub);margin:0;font-variant-numeric:tabular-nums;}
+  .trophy .del{position:absolute;top:8px;right:8px;}
+  .cf{position:fixed;top:-14px;width:9px;height:14px;z-index:60;animation:cffall linear forwards;pointer-events:none;}
+  @keyframes cffall{to{transform:translateY(105vh) rotate(720deg);}}
+  .clearov{position:fixed;inset:0;background:rgba(27,42,74,.55);display:flex;align-items:center;justify-content:center;z-index:50;padding:20px;}
+  .clearcard{background:#fff;padding:36px 48px;text-align:center;border-top:4px solid var(--red);max-width:360px;}
+  .clearcard .ct{font-family:var(--serif);font-size:26px;font-weight:600;margin:8px 0 4px;letter-spacing:.1em;}
+  .clearcard .cn{color:var(--sub);font-size:14px;margin:0 0 18px;}
+  @media (prefers-reduced-motion:reduce){.cf{display:none;}}
+
+  /* ===== 学習記録 ===== */
+  .logform{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;}
+  .logform .f{display:flex;flex-direction:column;gap:2px;}
+  .logform label{font-size:11px;color:var(--sub);letter-spacing:.05em;}
+  .logform input[type=number]{width:76px;font-variant-numeric:tabular-nums;}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--sub);margin:12px 0 6px;}
+  .legend i{display:inline-block;width:10px;height:10px;margin-right:5px;border-radius:1px;}
+  .chart{display:flex;align-items:flex-end;gap:6px;height:170px;border-bottom:1px solid var(--line);padding:0 4px;margin-top:6px;}
+  .chart .col{flex:1;display:flex;flex-direction:column-reverse;align-items:stretch;gap:0;position:relative;}
+  .chart .seg{width:100%;}
+  .chart .cap{position:absolute;bottom:-22px;left:0;right:0;text-align:center;font-size:10px;color:var(--sub);font-variant-numeric:tabular-nums;}
+  .chart .tot{position:absolute;top:-18px;left:0;right:0;text-align:center;font-size:10px;color:var(--ink);font-variant-numeric:tabular-nums;}
+  .chart-wrap{padding:24px 12px 30px;background:var(--card);border:1px solid var(--line);}
+
+  /* ===== 模試 ===== */
+  .mockform{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;}
+  .mockform .f{display:flex;flex-direction:column;gap:2px;}
+  .mockform label{font-size:11px;color:var(--sub);letter-spacing:.05em;}
+  .mockform input[type=number]{width:70px;}
+  svg.spark{display:block;width:100%;height:120px;}
+
+  /* ===== 併願校 ===== */
+  .schform{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;}
+  .schform .f{display:flex;flex-direction:column;gap:2px;}
+  .schform label{font-size:11px;color:var(--sub);letter-spacing:.05em;}
+  .presets{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 0;}
+  .cal{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;background:var(--line);border:1px solid var(--line);}
+  .cal .h{background:#F2F3EF;font-size:11px;color:var(--sub);text-align:center;padding:4px 0;letter-spacing:.05em;}
+  .cal .c{background:var(--card);min-height:58px;padding:3px 5px;font-size:11px;}
+  .cal .c .dn{font-variant-numeric:tabular-nums;color:var(--sub);}
+  .cal .c.out{background:#F5F5F1;}
+  .cal .c .ev{display:block;background:var(--ink);color:#fff;border-radius:2px;padding:0 4px;margin-top:2px;font-size:10px;line-height:1.5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .cal .c .ev.hon{background:var(--red);}
+  .cal .c .ev.ann{background:var(--done);}
+  .cal-scroll{overflow-x:auto;}
+  .cal-scroll .cal{min-width:520px;}
+
+  footer{margin-top:56px;border-top:1px solid var(--line);padding-top:16px;font-size:12px;color:var(--sub);}
+  @media (prefers-reduced-motion:reduce){.bar span{transition:none;}}
+</style>
+
+<div class="wrap">
+  <header>
+    <p class="eyebrow">Keio University · Faculty of Economics · 2027年度一般選抜 A方式</p>
+    <h1>慶應経済 逆算スケジュール帳</h1>
+    <p class="hsub">A方式（英語200・数学150・小論文70）／ 試験日 2027年2月13日（予測）</p>
+  </header>
+
+  <nav id="nav">
+    <button data-tab="home" class="on">ホーム</button>
+    <button data-tab="plan">逆算プラン</button>
+    <button data-tab="week">週間計画</button>
+    <button data-tab="books">参考書</button>
+    <button data-tab="study">学習記録</button>
+    <button data-tab="mock">模試</button>
+    <button data-tab="heigan">併願校</button>
+  </nav>
+
+  <!-- ============ ホーム ============ -->
+  <section class="tab on" id="tab-home">
+    <div class="counts">
+      <div class="count main">
+        <p class="lbl">慶應経済 本番まで</p>
+        <p class="num" id="c-exam">–<small>日</small></p>
+        <p class="date">2027/2/13（土）予測</p>
+        <p class="date" id="c-exam-t"></p>
+        <p class="date" id="c-exam-s"></p>
+      </div>
+      <div class="count">
+        <p class="lbl">出願開始まで</p>
+        <p class="num" id="c-app">–<small>日</small></p>
+        <p class="date">2026/12/25（金）予測</p>
+      </div>
+      <div class="count">
+        <p class="lbl">共通テストまで</p>
+        <p class="num" id="c-kyotsu">–<small>日</small></p>
+        <p class="date">2027/1/16（土）・17（日）確定</p>
+      </div>
+    </div>
+
+    <h2>今日の記録（ワンタップ）</h2>
+    <p class="note">ボタンを押すだけで保存。毎日の入力はここだけで完結します。</p>
+    <div class="card" id="quick"></div>
+
+    <div class="home-grid">
+      <div class="card stat">
+        <p class="lbl">連続記録</p>
+        <p class="big" id="h-streak">🔥 0<small style="font-size:14px">日</small></p>
+        <p class="sub2" id="h-streak-sub">今日の記録でスタート！</p>
+      </div>
+      <div class="card stat">
+        <p class="lbl">今日のノルマ（参考書）</p>
+        <p class="big" id="h-quota">–</p>
+        <p class="sub2" id="h-quota-sub">参考書タブから登録</p>
+      </div>
+      <div class="card stat">
+        <p class="lbl">今週の学習時間</p>
+        <p class="big" id="h-week">0<small style="font-size:14px">時間</small></p>
+        <p class="sub2" id="h-today">今日：未記録</p>
+      </div>
+      <div class="card stat">
+        <p class="lbl">今月のタスク進捗</p>
+        <p class="big" id="h-month">–</p>
+        <p class="sub2" id="h-month-theme"></p>
+      </div>
+      <div class="card stat">
+        <p class="lbl">直近の模試（総合偏差値）</p>
+        <p class="big" id="h-mock">–</p>
+        <p class="sub2" id="h-mock-name">未登録</p>
+      </div>
+      <div class="card stat">
+        <p class="lbl">参考書ペース</p>
+        <p class="big" id="h-books" style="font-size:20px;line-height:1.6">–</p>
+        <p class="sub2" id="h-books-sub">未登録</p>
+      </div>
+      <div class="card stat">
+        <p class="lbl">次の入試イベント</p>
+        <p class="big" id="h-next" style="font-size:18px;line-height:1.5">–</p>
+        <p class="sub2" id="h-next-date"></p>
+      </div>
+    </div>
+
+    <h2>がんばりの記録</h2>
+    <p class="note">記録を続ける・参考書をクリアするとバッジが集まります。</p>
+    <div class="badges" id="badges"></div>
+
+    <h2>予測入試日程</h2>
+    <p class="note">直近年度（2026年度：出願12/25〜1/19、試験2/13、発表2/25、手続3/4）を基に予測。<strong>正式日程は募集要項（例年7月頃公表）で必ず確認。</strong></p>
+    <div class="tbl-scroll">
+      <table>
+        <thead><tr><th>予測日</th><th>イベント</th><th>やること</th></tr></thead>
+        <tbody>
+          <tr><td class="d">2026/12/25（金）</td><td>Web出願 開始<span class="tag">予測</span></td><td>初日〜数日内に出願（写真・調査書は12月上旬までに準備）</td></tr>
+          <tr><td class="d">2027/1/16・17</td><td>大学入学共通テスト<span class="tag fix">確定</span></td><td>慶應経済では不要。併願の共テ利用・力試しに活用</td></tr>
+          <tr><td class="d">2027/1/19（火）</td><td>出願締切<span class="tag">予測</span></td><td>締切間際は避ける。書類不備の再確認</td></tr>
+          <tr class="hon"><td class="d">2027/2/13（土）</td><td>経済学部 試験日<span class="tag">予測</span></td><td>例年2月13日で固定。会場は日吉キャンパス</td></tr>
+          <tr><td class="d">2027/2/25（木）</td><td>合格発表<span class="tag">予測</span></td><td>Web発表。入学手続書類をすぐ確認</td></tr>
+          <tr><td class="d">2027/3/4（木）</td><td>入学手続締切<span class="tag">予測</span></td><td>入学金振込。併願校の手続締切と並べて確認</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>A方式の戦い方</h2>
+    <div class="card">
+      <ul style="margin:0;padding-left:1.2em;font-size:14px;">
+        <li><strong>英語200点（100分）</strong> — 配点最大。長文＋自由英作文。毎日触れる科目にする</li>
+        <li><strong>数学150点（80分）</strong> — マーク＋記述。マーク部分は第1段階選抜（足切り）の対象なので精度優先</li>
+        <li><strong>小論文70点（60分）</strong> — 課題文の要約＋論述。秋から添削サイクルを回せば間に合う</li>
+      </ul>
+      <p style="font-size:13px;color:var(--sub);margin:10px 0 0;">配点・時間は直近年度実績。募集要項で最終確認を。</p>
+    </div>
+  </section>
+
+  <!-- ============ 逆算プラン ============ -->
+  <section class="tab" id="tab-plan">
+    <h2>月別タスク（チェックは自動保存）</h2>
+    <p class="note">A方式（英・数・小論文）向けに試験日から逆算した標準プラン。自分のタスクも追加できます。</p>
+    <div id="months"></div>
+  </section>
+
+  <!-- ============ 週間計画 ============ -->
+  <section class="tab" id="tab-week">
+    <h2>週間計画</h2>
+    <p class="note">曜日ごとに「今月のプラン・参考書・定番メニュー」から選ぶだけ。書きたいときだけ自由入力も選べます。</p>
+    <div class="weeknav">
+      <button class="ghost" id="w-prev">◀ 前の週</button>
+      <span class="wlabel" id="w-label"></span>
+      <button class="ghost" id="w-next">次の週 ▶</button>
+      <button class="ghost" id="w-today">今週へ</button>
+    </div>
+    <div id="weekdays"></div>
+  </section>
+
+  <!-- ============ 参考書 ============ -->
+  <section class="tab" id="tab-books">
+    <h2>参考書を登録</h2>
+    <p class="note">総量（ページ数など）と目標完了日を入れると、1日に必要なペースを自動計算します。</p>
+    <div class="card">
+      <div class="schform">
+        <div class="f"><label for="b-name">参考書名</label><input type="text" id="b-name" placeholder="例：青チャートⅡB 例題" style="width:200px"></div>
+        <div class="f"><label for="b-subj">科目</label>
+          <select id="b-subj"><option value="en">英語</option><option value="ma">数学</option><option value="es">小論文</option><option value="ot">その他</option></select></div>
+        <div class="f"><label for="b-total">総量</label><input type="number" id="b-total" min="1" style="width:90px" placeholder="320"></div>
+        <div class="f"><label for="b-unit">単位</label>
+          <select id="b-unit"><option>ページ</option><option>問</option><option>章</option><option>講</option><option>長文</option></select></div>
+        <div class="f"><label for="b-due">目標完了日</label><input type="date" id="b-due"></div>
+        <button class="pri" id="b-save">追加</button>
+      </div>
+    </div>
+
+    <h2>進捗とペース</h2>
+    <p class="note">普段の記録はホームの＋ボタンでOK。記録が2日分たまると直近7日の実績ペースと完了予測日を計算し、必要ペースを下回ると<strong style="color:var(--red)">要ペースアップ</strong>と表示されます。</p>
+    <div id="books"></div>
+  </section>
+
+  <!-- ============ 学習記録 ============ -->
+  <section class="tab" id="tab-study">
+    <h2>学習時間の修正・過去日の入力</h2>
+    <p class="note">普段の記録はホームのワンタップでOK。ここは過去の日付の入力や修正に使います（保存で上書き）。</p>
+    <div class="card">
+      <div class="logform">
+        <div class="f"><label for="s-date">日付</label><input type="date" id="s-date"></div>
+        <div class="f"><label for="s-en">英語（h）</label><input type="number" id="s-en" min="0" max="24" step="0.5" value="0"></div>
+        <div class="f"><label for="s-ma">数学（h）</label><input type="number" id="s-ma" min="0" max="24" step="0.5" value="0"></div>
+        <div class="f"><label for="s-es">小論文（h）</label><input type="number" id="s-es" min="0" max="24" step="0.5" value="0"></div>
+        <div class="f"><label for="s-ot">その他（h）</label><input type="number" id="s-ot" min="0" max="24" step="0.5" value="0"></div>
+        <button class="pri" id="s-save">保存</button>
+      </div>
+    </div>
+
+    <h2>直近14日の学習時間</h2>
+    <div class="legend">
+      <span><i style="background:var(--en)"></i>英語</span>
+      <span><i style="background:var(--ma)"></i>数学</span>
+      <span><i style="background:var(--es)"></i>小論文</span>
+      <span><i style="background:var(--ot)"></i>その他</span>
+    </div>
+    <div class="chart-wrap"><div class="chart" id="chart"></div></div>
+    <div class="home-grid" style="margin-top:14px;">
+      <div class="card stat"><p class="lbl">今週合計</p><p class="big" id="st-week">0h</p></div>
+      <div class="card stat"><p class="lbl">先週合計</p><p class="big" id="st-lastweek">0h</p></div>
+      <div class="card stat"><p class="lbl">累計</p><p class="big" id="st-total">0h</p></div>
+      <div class="card stat"><p class="lbl">1日平均（直近14日）</p><p class="big" id="st-avg">0h</p></div>
+    </div>
+  </section>
+
+  <!-- ============ 模試 ============ -->
+  <section class="tab" id="tab-mock">
+    <h2>模試の成績を記録</h2>
+    <p class="note">偏差値と判定を記録して推移を見る。慶大プレ・冠模試は必ず登録。</p>
+    <div class="card">
+      <div class="mockform">
+        <div class="f"><label for="m-date">日付</label><input type="date" id="m-date"></div>
+        <div class="f"><label for="m-name">模試名</label><input type="text" id="m-name" placeholder="例：第2回全統記述" style="width:180px"></div>
+        <div class="f"><label for="m-en">英語 偏差値</label><input type="number" id="m-en" min="20" max="90" step="0.1"></div>
+        <div class="f"><label for="m-ma">数学 偏差値</label><input type="number" id="m-ma" min="20" max="90" step="0.1"></div>
+        <div class="f"><label for="m-tt">総合 偏差値</label><input type="number" id="m-tt" min="20" max="90" step="0.1"></div>
+        <div class="f"><label for="m-ha">判定</label>
+          <select id="m-ha"><option>A</option><option>B</option><option>C</option><option>D</option><option>E</option><option>－</option></select>
+        </div>
+        <button class="pri" id="m-save">追加</button>
+      </div>
+    </div>
+
+    <h2>総合偏差値の推移</h2>
+    <div class="card"><svg class="spark" id="m-spark" viewBox="0 0 600 120" preserveAspectRatio="none" aria-label="総合偏差値の推移グラフ"></svg></div>
+
+    <h2>記録一覧</h2>
+    <div class="tbl-scroll">
+      <table>
+        <thead><tr><th>日付</th><th>模試名</th><th>英語</th><th>数学</th><th>総合</th><th>判定</th><th></th></tr></thead>
+        <tbody id="m-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ 併願校 ============ -->
+  <section class="tab" id="tab-heigan">
+    <h2>併願校を登録</h2>
+    <p class="note">試験日・発表日・手続締切を登録すると、下の一覧と2月カレンダーに反映されます。日付は各校の募集要項で確認を。</p>
+    <div class="card">
+      <div class="schform">
+        <div class="f"><label for="sc-name">大学・学部</label><input type="text" id="sc-name" placeholder="例：早稲田 政治経済" style="width:200px"></div>
+        <div class="f"><label for="sc-exam">試験日</label><input type="date" id="sc-exam"></div>
+        <div class="f"><label for="sc-ann">発表日</label><input type="date" id="sc-ann"></div>
+        <div class="f"><label for="sc-dead">手続締切</label><input type="date" id="sc-dead"></div>
+        <button class="pri" id="sc-save">追加</button>
+      </div>
+      <div class="presets" id="presets"></div>
+      <p style="font-size:12px;color:var(--sub);margin:8px 0 0;">ワンタップ登録は例年日程からの<strong>予測</strong>（試験日のみ）。発表日・締切は後から編集欄で追加してください。</p>
+    </div>
+
+    <h2>受験カレンダー（2027年2月）</h2>
+    <div class="legend">
+      <span><i style="background:var(--red)"></i>慶應経済 本番</span>
+      <span><i style="background:var(--ink)"></i>併願 試験日</span>
+      <span><i style="background:var(--done)"></i>発表・手続</span>
+    </div>
+    <div class="cal-scroll"><div class="cal" id="cal"></div></div>
+
+    <h2>併願校一覧（日付順）</h2>
+    <div class="tbl-scroll">
+      <table>
+        <thead><tr><th>大学・学部</th><th>試験日</th><th>発表日</th><th>手続締切</th><th></th></tr></thead>
+        <tbody id="sc-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>
+    <p>予測根拠：慶應義塾大学 2026年度一般選抜実績（パスナビ掲載）。データはこの端末のブラウザにのみ保存されます。</p>
+    <button class="ghost" id="reset">全データをリセット</button>
+  </footer>
+</div>
+
+<script>
+/* ============ データ ============ */
+const KEY = "keio-econ-2027";
+const store = Object.assign(
+  {checked:{}, custom:{}, weekly:{}, study:{}, mocks:[], schools:[], books:[]},
+  JSON.parse(localStorage.getItem(KEY) || "{}")
+);
+function save(){ localStorage.setItem(KEY, JSON.stringify(store)); }
+
+function ymd(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function today0(){ const d=new Date(); d.setHours(0,0,0,0); return d; }
+function fmtMD(s){ const [y,m,d]=s.split("-"); return (+m)+"/"+(+d); }
+function fmtYMD(s){ const [y,m,d]=s.split("-"); return y+"/"+(+m)+"/"+(+d); }
+const WD = ["日","月","火","水","木","金","土"];
+
+/* ============ タブ ============ */
+document.getElementById("nav").addEventListener("click", e=>{
+  const b = e.target.closest("button"); if(!b) return;
+  document.querySelectorAll("#nav button").forEach(x=>x.classList.toggle("on", x===b));
+  document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("on", t.id==="tab-"+b.dataset.tab));
+  if(b.dataset.tab==="week") renderWeek(); // 候補（今月のプラン・参考書）を最新化
+});
+
+/* ============ カウントダウン ============ */
+function days(to){ return Math.max(0, Math.round((new Date(to+"T00:00:00") - today0())/864e5)); }
+const dExam = days("2027-02-13");
+document.getElementById("c-exam").innerHTML   = dExam+"<small>日</small>";
+document.getElementById("c-exam-t").textContent = "= 約"+(dExam*24).toLocaleString()+"時間（約"+(dExam/7).toFixed(1)+"週）";
+document.getElementById("c-exam-s").textContent = "1日5h学習なら 約"+(dExam*5).toLocaleString()+"時間 確保可能";
+document.getElementById("c-app").innerHTML    = days("2026-12-25")+"<small>日</small>";
+document.getElementById("c-kyotsu").innerHTML = days("2027-01-16")+"<small>日</small>";
+
+/* ============ 月別プラン（A方式特化） ============ */
+const PLAN = [
+  {id:"2026-07", name:"2026年 7月", theme:"基礎完成・現在地の把握", tasks:[
+    "過去問1年分を解いて本番との距離を測る（時間無制限でOK）",
+    "英単語帳・熟語帳を1冊仕上げる計画を立てる",
+    "数ⅠAⅡBの網羅系問題集（青チャート等）を1周終わらせる",
+    "夏休みの週間学習計画を「週間計画」タブに作る",
+    "夏の記述模試・慶大系模試に申し込む"
+  ]},
+  {id:"2026-08", name:"2026年 8月", theme:"夏期集中・演習量の最大化", tasks:[
+    "英語長文を毎日1題（慶應経済は長文＋自由英作文が軸）",
+    "数学：微積・確率・数列・ベクトルの頻出分野を集中演習",
+    "自由英作文の型（主張→理由→具体例）を身につける",
+    "小論文の型（要約→意見→論証）をインプット",
+    "8月末に過去問をもう1年分解き、7月比の伸びを確認"
+  ]},
+  {id:"2026-09", name:"2026年 9月", theme:"応用への移行", tasks:[
+    "過去問2〜3年分（英・数とも分野別に弱点を記録）",
+    "小論文の添削を受け始める（学校・塾・通信）",
+    "英作文の添削サイクルを週1で回す",
+    "数学：記述答案の書き方を意識した演習に切り替える",
+    "夏の模試の復習と判定分析（模試タブに記録）"
+  ]},
+  {id:"2026-10", name:"2026年 10月", theme:"過去問演習期", tasks:[
+    "過去問を本番と同じ制限時間で解き始める",
+    "数学マーク部分（足切り対象）の精度を上げる",
+    "併願校の候補を洗い出して「併願校」タブに登録",
+    "秋の記述模試・慶大プレを受験"
+  ]},
+  {id:"2026-11", name:"2026年 11月", theme:"実戦力強化・併願確定", tasks:[
+    "過去問 累計5年分を突破",
+    "併願校と受験日程を確定（2/13前後の連戦を設計）",
+    "調査書の発行を学校に依頼（12月の出願に間に合わせる）",
+    "小論文：過去テーマで60分通し練習",
+    "英語：時間内に大問を解き切る順番を試行して決める"
+  ]},
+  {id:"2026-12", name:"2026年 12月", theme:"出願準備・共テ対策", tasks:[
+    "出願用写真の撮影・Web出願の下書き",
+    "12/25（予測）出願開始 — 年内に出願を完了する",
+    "共通テストを受ける場合は共テ形式の演習を開始",
+    "生活リズムを本番時間帯（午前型）に移行開始"
+  ]},
+  {id:"2027-01", name:"2027年 1月", theme:"直前期・総仕上げ", tasks:[
+    "1/19（予測）出願締切 — 出願完了を確認",
+    "1/16・17 共通テスト（受験する場合）",
+    "過去問 累計10年分を目標に総仕上げ",
+    "英100分・数80分・小論60分の時間配分と解く順番を最終固定",
+    "受験票・日吉キャンパスまでの経路と宿泊の確認"
+  ]},
+  {id:"2027-02", name:"2027年 2月", theme:"本番", tasks:[
+    "併願校の受験（体力配分に注意・全部は詰め込まない）",
+    "2/13（予測）慶應経済 本番 — 前日は新しい問題に手を出さない",
+    "2/25（予測）合格発表の確認",
+    "入学手続（3/4予測締切）と併願校の手続日程を管理"
+  ]}
+];
+const nowMonthId = (()=>{ const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0"); })();
+
+function renderPlan(){
+  const root = document.getElementById("months");
+  root.innerHTML = "";
+  PLAN.forEach(m=>{
+    const custom = store.custom[m.id] || [];
+    const all = m.tasks.map((t,i)=>({key:m.id+"|d"+i, text:t, custom:false}))
+      .concat(custom.map((t,i)=>({key:m.id+"|c"+i, text:t, custom:true, ci:i})));
+    const doneN = all.filter(t=>store.checked[t.key]).length;
+
+    const sec = document.createElement("section");
+    sec.className = "month" + (m.id===nowMonthId ? " now" : "");
+    const head = document.createElement("div"); head.className="mhead";
+    head.innerHTML = '<span class="mname"></span><span class="mtheme"></span>'+
+      (m.id===nowMonthId?'<span class="nowtag">今月</span>':'')+'<span class="prog"></span>';
+    head.querySelector(".mname").textContent = m.name;
+    head.querySelector(".mtheme").textContent = m.theme;
+    head.querySelector(".prog").textContent = doneN+" / "+all.length;
+    const bar = document.createElement("div"); bar.className="bar";
+    bar.innerHTML = '<span style="width:'+(all.length?100*doneN/all.length:0)+'%"></span>';
+    sec.append(head, bar);
+
+    const ul = document.createElement("ul"); ul.className="tasks";
+    all.forEach(t=>{
+      const li = document.createElement("li");
+      if(store.checked[t.key]) li.className="done";
+      const cb = document.createElement("input");
+      cb.type="checkbox"; cb.id=t.key; cb.checked=!!store.checked[t.key];
+      cb.addEventListener("change", ()=>{ store.checked[t.key]=cb.checked; save(); renderPlan(); renderHome(); });
+      const lb = document.createElement("label"); lb.htmlFor=t.key; lb.textContent=t.text;
+      li.append(cb, lb);
+      if(t.custom){
+        const del = document.createElement("button");
+        del.className="del"; del.textContent="×"; del.setAttribute("aria-label","タスクを削除");
+        del.addEventListener("click", ()=>{ store.custom[m.id].splice(t.ci,1); delete store.checked[t.key]; save(); renderPlan(); renderHome(); });
+        li.append(del);
+      }
+      ul.append(li);
+    });
+    sec.append(ul);
+
+    const add = document.createElement("div"); add.className="addrow";
+    const inp = document.createElement("input");
+    inp.placeholder="タスクを追加（例：過去問2019年 英語）";
+    inp.setAttribute("aria-label", m.name+"にタスクを追加");
+    const btn = document.createElement("button"); btn.className="pri"; btn.textContent="追加";
+    const doAdd = ()=>{ const v=inp.value.trim(); if(!v) return;
+      (store.custom[m.id]=store.custom[m.id]||[]).push(v); save(); renderPlan(); renderHome(); };
+    btn.addEventListener("click", doAdd);
+    inp.addEventListener("keydown", e=>{ if(e.key==="Enter") doAdd(); });
+    add.append(inp, btn);
+    sec.append(add);
+    root.append(sec);
+  });
+}
+
+/* ============ 週間計画 ============ */
+function monday(d){ const x=new Date(d); x.setHours(0,0,0,0); x.setDate(x.getDate() - ((x.getDay()+6)%7)); return x; }
+let weekStart = monday(new Date());
+
+function weekCandidates(){
+  const out = {monthly:[], books:[], std:[]};
+  const m = PLAN.find(p=>p.id===nowMonthId);
+  if(m){
+    const custom = store.custom[m.id] || [];
+    m.tasks.forEach((t,i)=>{ if(!store.checked[m.id+"|d"+i]) out.monthly.push(t); });
+    custom.forEach((t,i)=>{ if(!store.checked[m.id+"|c"+i]) out.monthly.push(t); });
+  }
+  store.books.forEach(b=>{
+    const c = bookCalc(b);
+    if(c.remaining>0) out.books.push(b.name + " を進める" + (c.quota>0 ? "（1日"+c.quota+b.unit+"）" : ""));
+  });
+  out.std = [
+    "英語長文 1題","英単語 1セット","自由英作文 1本","数学 過去問1大問",
+    "数学 弱点分野の演習","過去問 1年分（時間を計る）","小論文 1本書く","模試の復習"
+  ];
+  return out;
+}
+
+function renderWeek(){
+  const wkey = ymd(weekStart);
+  const end = new Date(weekStart); end.setDate(end.getDate()+6);
+  document.getElementById("w-label").textContent =
+    (weekStart.getMonth()+1)+"/"+weekStart.getDate()+" 〜 "+(end.getMonth()+1)+"/"+end.getDate();
+
+  const root = document.getElementById("weekdays");
+  root.innerHTML = "";
+  const week = store.weekly[wkey] = store.weekly[wkey] || {};
+  const tstr = ymd(today0());
+  const cand = weekCandidates();
+
+  for(let i=0;i<7;i++){
+    const d = new Date(weekStart); d.setDate(d.getDate()+i);
+    const dkey = ymd(d);
+    const list = week[dkey] = week[dkey] || [];
+    const isToday = dkey===tstr;
+
+    const box = document.createElement("div"); box.className = "day"+(isToday?" today":"");
+    const head = document.createElement("div"); head.className="dhead";
+    const nm = document.createElement("span");
+    nm.className = "dname"+(d.getDay()===0?" sun":d.getDay()===6?" sat":"");
+    nm.textContent = (d.getMonth()+1)+"/"+d.getDate()+"（"+WD[d.getDay()]+"）";
+    head.append(nm);
+    if(isToday){ const t=document.createElement("span"); t.className="todaytag"; t.textContent="今日"; head.append(t); }
+    box.append(head);
+
+    if(list.length){
+      const ul = document.createElement("ul"); ul.className="tasks";
+      list.forEach((task,idx)=>{
+        const li = document.createElement("li"); if(task.done) li.className="done";
+        const cb = document.createElement("input");
+        cb.type="checkbox"; cb.id="w|"+dkey+"|"+idx; cb.checked=!!task.done;
+        cb.addEventListener("change", ()=>{ task.done=cb.checked; save(); renderWeek(); });
+        const lb = document.createElement("label"); lb.htmlFor=cb.id; lb.textContent=task.t;
+        const del = document.createElement("button");
+        del.className="del"; del.textContent="×"; del.setAttribute("aria-label","削除");
+        del.addEventListener("click", ()=>{ list.splice(idx,1); save(); renderWeek(); });
+        li.append(cb, lb, del);
+        ul.append(li);
+      });
+      box.append(ul);
+    }
+
+    const add = document.createElement("div"); add.className="addrow";
+    const sel = document.createElement("select");
+    sel.style.flex = "1"; sel.style.minWidth = "0";
+    sel.setAttribute("aria-label", nm.textContent+"のタスクを選ぶ");
+    const ph = document.createElement("option");
+    ph.value = ""; ph.textContent = "タスクを選ぶ…"; sel.append(ph);
+    const og = (label, items)=>{
+      if(!items.length) return;
+      const g = document.createElement("optgroup"); g.label = label;
+      items.forEach(t=>{ const o=document.createElement("option"); o.value=t; o.textContent=t; g.append(o); });
+      sel.append(g);
+    };
+    og("今月のプランから", cand.monthly);
+    og("参考書", cand.books);
+    og("定番メニュー", cand.std);
+    const free = document.createElement("option");
+    free.value = "__free"; free.textContent = "自由入力…"; sel.append(free);
+
+    const inp = document.createElement("input");
+    inp.placeholder = "タスクを入力";
+    inp.setAttribute("aria-label", nm.textContent+"のタスクを自由入力");
+    inp.style.display = "none"; inp.style.flex = "1";
+    sel.addEventListener("change", ()=>{
+      inp.style.display = sel.value==="__free" ? "" : "none";
+      if(sel.value==="__free") inp.focus();
+    });
+
+    const btn = document.createElement("button"); btn.className="pri"; btn.textContent="追加";
+    const doAdd = ()=>{
+      const v = sel.value==="__free" ? inp.value.trim() : sel.value;
+      if(!v) return;
+      list.push({t:v, done:false});
+      save(); renderWeek();
+    };
+    btn.addEventListener("click", doAdd);
+    inp.addEventListener("keydown", e=>{ if(e.key==="Enter") doAdd(); });
+    add.append(sel, inp, btn);
+    box.append(add);
+    root.append(box);
+  }
+}
+document.getElementById("w-prev").addEventListener("click", ()=>{ weekStart.setDate(weekStart.getDate()-7); renderWeek(); });
+document.getElementById("w-next").addEventListener("click", ()=>{ weekStart.setDate(weekStart.getDate()+7); renderWeek(); });
+document.getElementById("w-today").addEventListener("click", ()=>{ weekStart = monday(new Date()); renderWeek(); });
+
+/* ============ 参考書ペース管理 ============ */
+const SUBJNAME = {en:"英語", ma:"数学", es:"小論文", ot:"その他"};
+const SUBJCOLOR = {en:"var(--en)", ma:"var(--ma)", es:"var(--es)", ot:"var(--ot)"};
+
+document.getElementById("b-save").addEventListener("click", ()=>{
+  const name = document.getElementById("b-name").value.trim();
+  const total = +document.getElementById("b-total").value;
+  const due = document.getElementById("b-due").value;
+  if(!name || !total || total<1 || !due) return;
+  store.books.push({
+    name, total, due,
+    subj: document.getElementById("b-subj").value,
+    unit: document.getElementById("b-unit").value,
+    entries: []
+  });
+  document.getElementById("b-name").value = "";
+  document.getElementById("b-total").value = "";
+  save(); renderBooks(); renderHome();
+});
+
+function bookCalc(b){
+  const t = today0();
+  const es = [...b.entries].sort((a,x)=>a.date<x.date?-1:1);
+  const pos = es.length ? es[es.length-1].pos : 0;
+  const remaining = Math.max(0, b.total - pos);
+  const dl = Math.round((new Date(b.due+"T00:00:00") - t)/864e5);
+  const req = (dl>0 && remaining>0) ? remaining/dl : null;
+
+  // 実績ペース：直近7日（基準＝7日前以前の最後の記録。なければ最初の記録）
+  let pace = null;
+  if(es.length >= 2){
+    const cutoff = new Date(t); cutoff.setDate(cutoff.getDate()-7);
+    const cstr = ymd(cutoff);
+    let base = es[0];
+    for(const e of es){ if(e.date <= cstr) base = e; }
+    const last = es[es.length-1];
+    const span = Math.round((new Date(last.date+"T00:00:00") - new Date(base.date+"T00:00:00"))/864e5);
+    if(span > 0) pace = (last.pos - base.pos)/span;
+  }
+
+  let proj = null;
+  if(pace && pace>0 && remaining>0){
+    const d = new Date(t); d.setDate(d.getDate() + Math.ceil(remaining/pace)); proj = d;
+  }
+
+  let status;
+  if(remaining===0) status = "done";
+  else if(dl<=0) status = "late";
+  else if(pace==null) status = "na";
+  else status = pace >= remaining/dl ? "ok" : "late";
+
+  // 今日のノルマ：今日の開始時点の残りを残り日数で割る
+  const tstr = ymd(t);
+  const yE = es.filter(e=>e.date < tstr);
+  const yPos = yE.length ? yE[yE.length-1].pos : 0;
+  const doneToday = Math.max(0, pos - yPos);
+  const quota = (dl>0 && b.total-yPos>0) ? Math.ceil((b.total-yPos)/dl) : 0;
+
+  return {pos, remaining, dl, req, pace, proj, status, doneToday, quota};
+}
+
+/* ============ やる気の仕掛け ============ */
+function allRecordDates(){
+  const s = new Set(Object.keys(store.study));
+  store.books.forEach(b=>b.entries.forEach(e=>s.add(e.date)));
+  return s;
+}
+function streak(){
+  const dates = allRecordDates();
+  const d = today0();
+  const todayRec = dates.has(ymd(d));
+  if(!todayRec) d.setDate(d.getDate()-1);
+  let n = 0;
+  while(dates.has(ymd(d))){ n++; d.setDate(d.getDate()-1); }
+  return {n, todayRec};
+}
+function clearedBooks(){
+  return store.books.filter(b=>b.entries.length && Math.max(...b.entries.map(e=>e.pos)) >= b.total);
+}
+function badgeList(){
+  const st = streak().n;
+  const totalH = Object.values(store.study).reduce((a,r)=>a+sumRec(r),0);
+  const clears = clearedBooks().length;
+  return [
+    {icon:"✏️", label:"はじめの一歩", got:allRecordDates().size>0},
+    {icon:"🔥", label:"3日連続", got:st>=3},
+    {icon:"🔥", label:"7日連続", got:st>=7},
+    {icon:"💪", label:"14日連続", got:st>=14},
+    {icon:"👑", label:"30日連続", got:st>=30},
+    {icon:"🏆", label:"参考書1冊クリア", got:clears>=1},
+    {icon:"🏆", label:"3冊クリア", got:clears>=3},
+    {icon:"⭐", label:"5冊クリア", got:clears>=5},
+    {icon:"⏱", label:"累計50時間", got:totalH>=50},
+    {icon:"⏱", label:"累計100時間", got:totalH>=100},
+    {icon:"⛰", label:"累計300時間", got:totalH>=300},
+    {icon:"🗻", label:"累計500時間", got:totalH>=500}
+  ];
+}
+function renderBadges(){
+  const box = document.getElementById("badges");
+  box.innerHTML = "";
+  badgeList().forEach(b=>{
+    const s = document.createElement("span");
+    s.className = "badge " + (b.got ? "got" : "no");
+    s.textContent = b.icon + " " + b.label;
+    box.append(s);
+  });
+}
+function confettiFall(){
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const colors = ["#C8102E","#1B2A4A","#B8860B","#2E7D4F","#3D5A99"];
+  for(let i=0;i<70;i++){
+    const p = document.createElement("div"); p.className = "cf";
+    p.style.left = Math.random()*100 + "vw";
+    p.style.background = colors[i%colors.length];
+    p.style.animationDelay = (Math.random()*0.8)+"s";
+    p.style.animationDuration = (2+Math.random()*1.5)+"s";
+    document.body.append(p);
+    setTimeout(()=>p.remove(), 5000);
+  }
+}
+function celebrate(name){
+  confettiFall();
+  const ov = document.createElement("div"); ov.className = "clearov";
+  const card = document.createElement("div"); card.className = "clearcard";
+  card.innerHTML = '<div style="font-size:46px">🏆</div><p class="ct">クリア！</p><p class="cn"></p>';
+  card.querySelector(".cn").textContent = "「"+name+"」を完走しました。殿堂入りです！";
+  const btn = document.createElement("button"); btn.className = "pri"; btn.textContent = "次の一冊へ";
+  btn.addEventListener("click", ()=>ov.remove());
+  card.append(btn); ov.append(card);
+  ov.addEventListener("click", e=>{ if(e.target===ov) ov.remove(); });
+  document.body.append(ov);
+}
+const PILL = {ok:["ok","順調"], late:["late","要ペースアップ"], na:["na","記録待ち"], done:["ok","完了"]};
+
+function renderBooks(){
+  const root = document.getElementById("books");
+  root.innerHTML = "";
+  if(!store.books.length){
+    root.innerHTML = '<p class="note">参考書を登録するとここに進捗カードが並びます。</p>';
+    return;
+  }
+  const tstr = ymd(today0());
+  const active = [], cleared = [];
+  store.books.forEach((b,i)=>{
+    const c = bookCalc(b);
+    (c.remaining===0 ? cleared : active).push({b,i,c});
+  });
+
+  active.forEach(({b,i,c})=>{
+    const card = document.createElement("div"); card.className = "book";
+
+    const head = document.createElement("div"); head.className = "bhead";
+    const nm = document.createElement("span"); nm.className = "bname"; nm.textContent = b.name;
+    const chip = document.createElement("span"); chip.className = "chip";
+    chip.textContent = SUBJNAME[b.subj] || "その他";
+    chip.style.background = SUBJCOLOR[b.subj] || "var(--ot)";
+    const pill = document.createElement("span");
+    pill.className = "pill " + PILL[c.status][0]; pill.textContent = PILL[c.status][1];
+    const del = document.createElement("button");
+    del.className = "del"; del.textContent = "×"; del.setAttribute("aria-label","参考書を削除");
+    del.addEventListener("click", ()=>{
+      if(confirm('「'+b.name+'」を削除しますか？')){ store.books.splice(i,1); save(); renderBooks(); renderHome(); }
+    });
+    head.append(nm, chip, pill, del);
+    card.append(head);
+
+    const bar = document.createElement("div"); bar.className = "bar b6";
+    bar.innerHTML = '<span style="width:'+Math.min(100, 100*c.pos/b.total)+'%;background:'+
+      (c.status==="late" ? "var(--red)" : "var(--done)")+'"></span>';
+    card.append(bar);
+
+    const stats = document.createElement("div"); stats.className = "bstats";
+    const stat = (k,v,warn)=>{
+      const d = document.createElement("div"); d.className = "bs";
+      const kk = document.createElement("p"); kk.className = "k"; kk.textContent = k;
+      const vv = document.createElement("p"); vv.className = "v"+(warn?" warn":""); vv.innerHTML = v;
+      d.append(kk, vv); return d;
+    };
+    const pct = Math.round(100*c.pos/b.total);
+    stats.append(
+      stat("今日のノルマ", c.quota>0
+        ? c.doneToday+" / "+c.quota+"<small> "+b.unit+"</small>"+(c.doneToday>=c.quota?"<small style='color:var(--done);font-weight:600'>　達成🎉</small>":"")
+        : "–", c.quota>0 && c.doneToday<c.quota),
+      stat("進捗", c.pos+" / "+b.total+"<small> "+b.unit+"（"+pct+"%）</small>"),
+      stat("目標日", fmtMD(b.due)+"<small>（あと"+(c.dl>0?c.dl+"日":"期限超過")+"）</small>", c.dl<=0 && c.status!=="done"),
+      stat("必要ペース", c.req!=null ? (Math.round(c.req*10)/10)+"<small> "+b.unit+"/日</small>" : "–"),
+      stat("実績ペース（7日）", c.pace!=null ? (Math.round(c.pace*10)/10)+"<small> "+b.unit+"/日</small>" : "計測中", c.status==="late" && c.pace!=null),
+      stat("完了予測", c.status==="done" ? "完了！" : (c.proj ? (c.proj.getMonth()+1)+"/"+c.proj.getDate() + (ymd(c.proj)>b.due?"<small>（遅れ）</small>":"<small>（順調）</small>") : "–"), c.proj && ymd(c.proj)>b.due)
+    );
+    card.append(stats);
+
+    const up = document.createElement("div"); up.className = "bupdate";
+    const lab = document.createElement("label");
+    lab.textContent = "今日の到達位置（"+b.unit+"）："; lab.htmlFor = "bpos"+i;
+    const inp = document.createElement("input");
+    inp.type = "number"; inp.id = "bpos"+i; inp.min = 0; inp.max = b.total; inp.value = c.pos;
+    const btn = document.createElement("button"); btn.className = "pri"; btn.textContent = "記録";
+    const doRec = ()=>{
+      const v = +inp.value;
+      if(isNaN(v) || v<0 || v>b.total) return;
+      const wasClear = c.pos >= b.total;
+      const e = b.entries.find(x=>x.date===tstr);
+      if(e) e.pos = v; else b.entries.push({date:tstr, pos:v});
+      if(v >= b.total && !wasClear){ b.clearedDate = tstr; celebrate(b.name); }
+      save(); renderBooks(); renderHome();
+    };
+    btn.addEventListener("click", doRec);
+    inp.addEventListener("keydown", e=>{ if(e.key==="Enter") doRec(); });
+    // ワンタップでも進められる
+    const qbs = [1,5,10].map(n=>{
+      const qb = document.createElement("button");
+      qb.className = "qbtn"; qb.textContent = "＋"+n;
+      qb.addEventListener("click", ()=>bookStep(b, n));
+      return qb;
+    });
+    // ノルマの残りをひとこと表示
+    const msg = document.createElement("span");
+    if(c.quota>0){
+      if(c.doneToday>=c.quota){ msg.className="quota-ok"; msg.textContent="今日のノルマ達成！"; }
+      else { msg.className="quota-left"; msg.textContent="ノルマまであと"+(c.quota-c.doneToday)+b.unit; }
+    }
+    up.append(lab, inp, btn, ...qbs, msg);
+    card.append(up);
+    root.append(card);
+  });
+
+  // 殿堂入り
+  if(cleared.length){
+    const h = document.createElement("h2"); h.textContent = "殿堂入り（クリア済み）";
+    const hall = document.createElement("div"); hall.className = "hall";
+    cleared.forEach(({b,i})=>{
+      const es = [...b.entries].sort((a,x)=>a.date<x.date?-1:1);
+      const clearDate = b.clearedDate || (es.find(e=>e.pos>=b.total)||es[es.length-1]).date;
+      const days = Math.max(1, Math.round((new Date(clearDate+"T00:00:00")-new Date(es[0].date+"T00:00:00"))/864e5)+1);
+      const t = document.createElement("div"); t.className = "trophy";
+      const icon = document.createElement("div"); icon.className="ticon"; icon.textContent="🏆";
+      const nm = document.createElement("p"); nm.className="tname"; nm.textContent=b.name;
+      const info = document.createElement("p"); info.className="tinfo";
+      info.textContent = SUBJNAME[b.subj]+"・全"+b.total+b.unit+"　"+fmtMD(clearDate)+" 完走（"+days+"日間）";
+      const del = document.createElement("button");
+      del.className="del"; del.textContent="×"; del.setAttribute("aria-label","削除");
+      del.addEventListener("click", ()=>{
+        if(confirm('「'+b.name+'」を削除しますか？')){ store.books.splice(i,1); save(); renderBooks(); renderHome(); }
+      });
+      t.append(icon, nm, info, del);
+      hall.append(t);
+    });
+    root.append(h, hall);
+  }
+}
+
+/* ============ 学習記録 ============ */
+const SUBJ = [["en","--en"],["ma","--ma"],["es","--es"],["ot","--ot"]];
+document.getElementById("s-date").value = ymd(today0());
+
+document.getElementById("s-save").addEventListener("click", ()=>{
+  const date = document.getElementById("s-date").value;
+  if(!date) return;
+  const rec = {
+    en:+document.getElementById("s-en").value||0,
+    ma:+document.getElementById("s-ma").value||0,
+    es:+document.getElementById("s-es").value||0,
+    ot:+document.getElementById("s-ot").value||0
+  };
+  if(rec.en+rec.ma+rec.es+rec.ot === 0) delete store.study[date];
+  else store.study[date] = rec;
+  save(); renderStudy(); renderHome();
+});
+
+function sumRec(r){ return (r.en||0)+(r.ma||0)+(r.es||0)+(r.ot||0); }
+function weekTotal(start){
+  let t=0;
+  for(let i=0;i<7;i++){ const d=new Date(start); d.setDate(d.getDate()+i);
+    const r=store.study[ymd(d)]; if(r) t+=sumRec(r); }
+  return t;
+}
+
+function renderStudy(){
+  const chart = document.getElementById("chart");
+  chart.innerHTML = "";
+  const daysArr = [];
+  for(let i=13;i>=0;i--){ const d=today0(); d.setDate(d.getDate()-i); daysArr.push(ymd(d)); }
+  const max = Math.max(4, ...daysArr.map(k=>{ const r=store.study[k]; return r?sumRec(r):0; }));
+
+  daysArr.forEach(k=>{
+    const r = store.study[k];
+    const col = document.createElement("div"); col.className="col";
+    const total = r?sumRec(r):0;
+    SUBJ.forEach(([s,v])=>{
+      const h = r ? (r[s]||0)/max*100 : 0;
+      if(h>0){ const seg=document.createElement("div"); seg.className="seg";
+        seg.style.height=h+"%"; seg.style.background="var("+v.replace("--","--")+")";
+        seg.style.background = {en:"var(--en)",ma:"var(--ma)",es:"var(--es)",ot:"var(--ot)"}[s];
+        col.append(seg); }
+    });
+    if(total>0){ const t=document.createElement("span"); t.className="tot"; t.textContent=total; col.append(t); }
+    const cap = document.createElement("span"); cap.className="cap"; cap.textContent=fmtMD(k);
+    col.append(cap);
+    chart.append(col);
+  });
+
+  const thisMon = monday(new Date());
+  const lastMon = new Date(thisMon); lastMon.setDate(lastMon.getDate()-7);
+  const total = Object.values(store.study).reduce((a,r)=>a+sumRec(r),0);
+  const recent = daysArr.reduce((a,k)=>{ const r=store.study[k]; return a+(r?sumRec(r):0); },0);
+  document.getElementById("st-week").textContent = weekTotal(thisMon)+"h";
+  document.getElementById("st-lastweek").textContent = weekTotal(lastMon)+"h";
+  document.getElementById("st-total").textContent = Math.round(total*10)/10+"h";
+  document.getElementById("st-avg").textContent = Math.round(recent/14*10)/10+"h";
+}
+
+/* ============ 模試 ============ */
+document.getElementById("m-date").value = ymd(today0());
+document.getElementById("m-save").addEventListener("click", ()=>{
+  const date = document.getElementById("m-date").value;
+  const name = document.getElementById("m-name").value.trim();
+  if(!date || !name) return;
+  store.mocks.push({
+    date, name,
+    en:+document.getElementById("m-en").value||null,
+    ma:+document.getElementById("m-ma").value||null,
+    tt:+document.getElementById("m-tt").value||null,
+    ha:document.getElementById("m-ha").value
+  });
+  store.mocks.sort((a,b)=>a.date<b.date?-1:1);
+  document.getElementById("m-name").value="";
+  save(); renderMocks(); renderHome();
+});
+
+function renderMocks(){
+  const body = document.getElementById("m-body");
+  body.innerHTML = "";
+  store.mocks.forEach((m,i)=>{
+    const tr = document.createElement("tr");
+    const cells = [fmtYMD(m.date), m.name, m.en??"–", m.ma??"–", m.tt??"–", m.ha];
+    cells.forEach((c,ci)=>{ const td=document.createElement("td");
+      if(ci===0) td.className="d"; td.textContent=c; tr.append(td); });
+    const td = document.createElement("td");
+    const del = document.createElement("button");
+    del.className="del"; del.textContent="×"; del.setAttribute("aria-label","削除");
+    del.addEventListener("click", ()=>{ store.mocks.splice(i,1); save(); renderMocks(); renderHome(); });
+    td.append(del); tr.append(td);
+    body.append(tr);
+  });
+
+  const svg = document.getElementById("m-spark");
+  const pts = store.mocks.filter(m=>m.tt!=null);
+  svg.innerHTML = "";
+  if(pts.length >= 1){
+    const vals = pts.map(m=>m.tt);
+    const min = Math.min(...vals, 45)-3, max = Math.max(...vals, 70)+3;
+    const x = i => pts.length===1 ? 300 : 30 + i*(540/(pts.length-1));
+    const y = v => 110 - (v-min)/(max-min)*100;
+    const target = y(70);
+    svg.innerHTML =
+      '<line x1="0" y1="'+target+'" x2="600" y2="'+target+'" stroke="#C8102E" stroke-dasharray="4 4" stroke-width="1"/>'+
+      '<text x="596" y="'+(target-4)+'" text-anchor="end" font-size="10" fill="#C8102E">目標 70</text>'+
+      (pts.length>1 ? '<polyline fill="none" stroke="#1B2A4A" stroke-width="2" points="'+
+        pts.map((m,i)=>x(i)+","+y(m.tt)).join(" ")+'"/>' : "")+
+      pts.map((m,i)=>'<circle cx="'+x(i)+'" cy="'+y(m.tt)+'" r="4" fill="#1B2A4A"/>'+
+        '<text x="'+x(i)+'" y="'+(y(m.tt)-8)+'" text-anchor="middle" font-size="11" fill="#1B2A4A">'+m.tt+'</text>').join("");
+  } else {
+    svg.innerHTML = '<text x="300" y="64" text-anchor="middle" font-size="13" fill="#5B6B85">総合偏差値を登録すると推移が表示されます</text>';
+  }
+}
+
+/* ============ 併願校 ============ */
+const PRESETS = [
+  {name:"慶應 商", exam:"2027-02-14"},
+  {name:"慶應 総合政策", exam:"2027-02-17"},
+  {name:"慶應 環境情報", exam:"2027-02-18"},
+  {name:"早稲田 政治経済", exam:"2027-02-20"},
+  {name:"早稲田 商", exam:"2027-02-21"}
+];
+const presetBox = document.getElementById("presets");
+PRESETS.forEach(p=>{
+  const b = document.createElement("button");
+  b.className="ghost"; b.textContent = "＋ "+p.name+"（"+fmtMD(p.exam)+" 予測）";
+  b.addEventListener("click", ()=>{
+    if(store.schools.some(s=>s.name===p.name)) return;
+    store.schools.push({name:p.name, exam:p.exam, ann:"", dead:""});
+    save(); renderSchools(); renderHome();
+  });
+  presetBox.append(b);
+});
+
+document.getElementById("sc-save").addEventListener("click", ()=>{
+  const name = document.getElementById("sc-name").value.trim();
+  const exam = document.getElementById("sc-exam").value;
+  if(!name || !exam) return;
+  store.schools.push({
+    name, exam,
+    ann: document.getElementById("sc-ann").value || "",
+    dead: document.getElementById("sc-dead").value || ""
+  });
+  document.getElementById("sc-name").value="";
+  save(); renderSchools(); renderHome();
+});
+
+function renderSchools(){
+  store.schools.sort((a,b)=>a.exam<b.exam?-1:1);
+  const body = document.getElementById("sc-body");
+  body.innerHTML = "";
+  store.schools.forEach((s,i)=>{
+    const tr = document.createElement("tr");
+    const mk = (v,cls)=>{ const td=document.createElement("td"); if(cls) td.className=cls;
+      td.textContent = v || "–"; return td; };
+    tr.append(mk(s.name), mk(s.exam?fmtYMD(s.exam):"","d"), mk(s.ann?fmtYMD(s.ann):""), mk(s.dead?fmtYMD(s.dead):""));
+    const td = document.createElement("td");
+    const del = document.createElement("button");
+    del.className="del"; del.textContent="×"; del.setAttribute("aria-label","削除");
+    del.addEventListener("click", ()=>{ store.schools.splice(i,1); save(); renderSchools(); renderHome(); });
+    td.append(del); tr.append(td);
+    body.append(tr);
+  });
+  renderCal();
+}
+
+function renderCal(){
+  const cal = document.getElementById("cal");
+  cal.innerHTML = "";
+  WD.forEach(w=>{ const h=document.createElement("div"); h.className="h"; h.textContent=w; cal.append(h); });
+  const first = new Date(2027,1,1); // 2027-02-01
+  const startPad = first.getDay();
+  const daysInMonth = 28; // 2027年2月
+
+  const events = {};
+  const push = (date, label, cls)=>{ if(!date) return;
+    (events[date]=events[date]||[]).push({label, cls}); };
+  push("2027-02-13","慶應経済 本番","hon");
+  push("2027-02-25","経済 発表","ann");
+  store.schools.forEach(s=>{
+    push(s.exam, s.name, "");
+    push(s.ann, s.name+" 発表", "ann");
+    push(s.dead, s.name+" 締切", "ann");
+  });
+
+  for(let i=0;i<startPad;i++){ const c=document.createElement("div"); c.className="c out"; cal.append(c); }
+  for(let d=1;d<=daysInMonth;d++){
+    const key = "2027-02-"+String(d).padStart(2,"0");
+    const c = document.createElement("div"); c.className="c";
+    const dn = document.createElement("span"); dn.className="dn"; dn.textContent=d; c.append(dn);
+    (events[key]||[]).forEach(ev=>{
+      const e = document.createElement("span");
+      e.className = "ev"+(ev.cls?" "+ev.cls:"");
+      e.textContent = ev.label; e.title = ev.label;
+      c.append(e);
+    });
+    cal.append(c);
+  }
+  const totalCells = startPad + daysInMonth;
+  for(let i=totalCells; i%7!==0; i++){ const c=document.createElement("div"); c.className="c out"; cal.append(c); }
+}
+
+/* ============ ワンタップ記録（ホーム） ============ */
+const QSUBJ = [["en","英語"],["ma","数学"],["es","小論文"],["ot","その他"]];
+
+function bookStep(b, n){
+  const tstr = ymd(today0());
+  const es = [...b.entries].sort((a,x)=>a.date<x.date?-1:1);
+  const cur = es.length ? es[es.length-1].pos : 0;
+  const v = Math.min(b.total, Math.max(0, cur + n));
+  if(v === cur) return;
+  const wasClear = cur >= b.total;
+  const e = b.entries.find(x=>x.date===tstr);
+  if(e) e.pos = v; else b.entries.push({date:tstr, pos:v});
+  if(v >= b.total && !wasClear){ b.clearedDate = tstr; celebrate(b.name); }
+  save(); renderBooks(); renderHome();
+}
+
+function renderQuick(){
+  const box = document.getElementById("quick");
+  box.innerHTML = "";
+  const tstr = ymd(today0());
+  const rec = store.study[tstr] || {};
+
+  // 学習時間：＋ボタンで積む
+  const sg = document.createElement("div"); sg.className = "qgroup";
+  const st = document.createElement("p"); st.className = "qtitle"; st.textContent = "学習時間"; sg.append(st);
+  QSUBJ.forEach(([k,name])=>{
+    const row = document.createElement("div"); row.className = "qrow";
+    const lab = document.createElement("span"); lab.className = "qlab"; lab.textContent = name;
+    const val = document.createElement("span"); val.className = "qval"; val.textContent = (rec[k]||0)+" h";
+    const mk = (amt,txt,minus)=>{
+      const bt = document.createElement("button");
+      bt.className = "qbtn"+(minus?" minus":""); bt.textContent = txt;
+      bt.addEventListener("click", ()=>{
+        const r = store.study[tstr] || (store.study[tstr] = {en:0,ma:0,es:0,ot:0});
+        r[k] = Math.max(0, Math.round(((r[k]||0)+amt)*10)/10);
+        if(sumRec(r)===0) delete store.study[tstr];
+        save(); renderStudy(); renderHome();
+      });
+      return bt;
+    };
+    row.append(lab, val, mk(0.5,"＋30分"), mk(1,"＋1h"), mk(-0.5,"−30分",true));
+    sg.append(row);
+  });
+  box.append(sg);
+
+  // 参考書：＋ボタンで進める
+  const act = store.books.map(b=>({b, c:bookCalc(b)})).filter(x=>x.c.remaining>0);
+  if(act.length){
+    const bg = document.createElement("div"); bg.className = "qgroup";
+    const bt = document.createElement("p"); bt.className = "qtitle"; bt.textContent = "参考書の進み"; bg.append(bt);
+    act.forEach(({b,c})=>{
+      const row = document.createElement("div"); row.className = "qrow";
+      const lab = document.createElement("span"); lab.className = "qlab"; lab.textContent = b.name; lab.title = b.name;
+      const val = document.createElement("span"); val.className = "qval";
+      val.textContent = c.quota>0 ? "今日 "+c.doneToday+"/"+c.quota+b.unit : "今日 "+c.doneToday+b.unit;
+      const mk = n=>{
+        const btn = document.createElement("button");
+        btn.className = "qbtn"; btn.textContent = "＋"+n;
+        btn.addEventListener("click", ()=>bookStep(b, n));
+        return btn;
+      };
+      row.append(lab, val, mk(1), mk(5), mk(10));
+      if(c.quota>0 && c.doneToday>=c.quota){
+        const ok = document.createElement("span"); ok.className = "qdone"; ok.textContent = "ノルマ達成🎉";
+        row.append(ok);
+      }
+      bg.append(row);
+    });
+    box.append(bg);
+  } else if(!store.books.length){
+    const p = document.createElement("p"); p.className = "note"; p.style.margin = "10px 0 0";
+    p.textContent = "参考書タブで登録すると、ここに＋ボタンが並びます。";
+    box.append(p);
+  }
+}
+
+/* ============ ホーム ============ */
+function renderHome(){
+  const tstr = ymd(today0());
+  const thisMon = monday(new Date());
+
+  // 連続記録ストリーク
+  const st = streak();
+  document.getElementById("h-streak").innerHTML = "🔥 "+st.n+'<small style="font-size:14px">日</small>';
+  document.getElementById("h-streak-sub").textContent =
+    st.n===0 ? "今日の記録でスタート！" :
+    st.todayRec ? "今日も記録済み。この調子！" : "今日の記録でストリーク継続！";
+
+  // 今日のノルマ（参考書）
+  const calcs = store.books.map(bookCalc).filter(c=>c.remaining>0 && c.quota>0);
+  if(calcs.length){
+    const hit = calcs.filter(c=>c.doneToday>=c.quota).length;
+    document.getElementById("h-quota").innerHTML =
+      hit+" / "+calcs.length+'<small style="font-size:14px">冊 達成</small>';
+    document.getElementById("h-quota-sub").textContent =
+      hit===calcs.length ? "全ノルマ達成！おつかれさま🎉" : "参考書タブで今日の位置を記録しよう";
+  } else {
+    document.getElementById("h-quota").textContent = "–";
+    document.getElementById("h-quota-sub").textContent = "参考書タブから登録";
+  }
+
+  renderBadges();
+
+  document.getElementById("h-week").innerHTML = weekTotal(thisMon)+'<small style="font-size:14px">時間</small>';
+  const tr = store.study[tstr];
+  document.getElementById("h-today").textContent = tr ? "今日："+sumRec(tr)+"時間" : "今日：未記録";
+
+  const m = PLAN.find(p=>p.id===nowMonthId);
+  if(m){
+    const custom = store.custom[m.id]||[];
+    const total = m.tasks.length + custom.length;
+    const done = m.tasks.map((t,i)=>m.id+"|d"+i).concat(custom.map((t,i)=>m.id+"|c"+i))
+      .filter(k=>store.checked[k]).length;
+    document.getElementById("h-month").textContent = done+" / "+total;
+    document.getElementById("h-month-theme").textContent = m.theme;
+  } else {
+    document.getElementById("h-month").textContent = "–";
+    document.getElementById("h-month-theme").textContent = "対象期間外";
+  }
+
+  const active = store.books.map(bookCalc).filter(c=>c.status!=="done");
+  const okN = active.filter(c=>c.status==="ok").length;
+  const lateN = active.filter(c=>c.status==="late").length;
+  if(store.books.length){
+    document.getElementById("h-books").innerHTML =
+      '順調 '+okN+'<span style="font-size:13px;color:var(--sub)">冊</span>'+
+      (lateN? '　<span style="color:var(--red)">要ペースアップ '+lateN+'<span style="font-size:13px">冊</span></span>' : '');
+    document.getElementById("h-books-sub").textContent = "登録 "+store.books.length+"冊（完了 "+(store.books.length-active.length)+"冊）";
+  } else {
+    document.getElementById("h-books").textContent = "–";
+    document.getElementById("h-books-sub").textContent = "参考書タブから登録";
+  }
+
+  const last = [...store.mocks].filter(x=>x.tt!=null).pop();
+  document.getElementById("h-mock").textContent = last ? last.tt : "–";
+  document.getElementById("h-mock-name").textContent = last ? last.name+"（"+last.ha+"判定）" : "未登録";
+
+  const fixed = [
+    {date:"2026-12-25", label:"出願開始（予測）"},
+    {date:"2027-01-16", label:"共通テスト"},
+    {date:"2027-01-19", label:"出願締切（予測）"},
+    {date:"2027-02-13", label:"慶應経済 本番"},
+    {date:"2027-02-25", label:"合格発表（予測）"}
+  ];
+  const evs = fixed.concat(store.schools.filter(s=>s.exam).map(s=>({date:s.exam, label:s.name+" 試験"})));
+  const next = evs.filter(e=>e.date>=tstr).sort((a,b)=>a.date<b.date?-1:1)[0];
+  document.getElementById("h-next").textContent = next ? next.label : "–";
+  document.getElementById("h-next-date").textContent = next ? fmtYMD(next.date)+"（あと"+days(next.date)+"日）" : "";
+
+  renderQuick();
+}
+
+/* ============ リセット・初期描画 ============ */
+document.getElementById("reset").addEventListener("click", ()=>{
+  if(confirm("チェック・週間計画・参考書・学習記録・模試・併願校をすべて削除します。よろしいですか？")){
+    Object.assign(store, {checked:{}, custom:{}, weekly:{}, study:{}, mocks:[], schools:[], books:[]});
+    save(); renderPlan(); renderWeek(); renderBooks(); renderStudy(); renderMocks(); renderSchools(); renderHome();
+  }
+});
+
+renderPlan(); renderWeek(); renderBooks(); renderStudy(); renderMocks(); renderSchools(); renderHome();
+</script>
