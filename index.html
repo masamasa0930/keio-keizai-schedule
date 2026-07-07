@@ -365,8 +365,8 @@
 
   <!-- ============ 参考書 ============ -->
   <section class="tab" id="tab-books">
-    <h2>おすすめルート（A方式標準・逆算済み）</h2>
-    <p class="note">試験日2/13から逆算した標準ルートです。一括登録してから、書名や総量・目標日を自分の使う本に合わせて調整してください（不要な本は×で削除）。遅れが出たらホームの「コーチの診断」が修正案を出します。</p>
+    <h2>きみ専用ルート（手持ちの参考書で逆算済み）</h2>
+    <p class="note">手持ちの参考書を、試験日2/13から逆算した順番・期限で並べたルートです。「一括登録」を押せば準備完了。総量（語数・ページ数）は概算なので、実物と違ったら×で削除→正しい数で登録し直してOK。遅れが出たらホームの「コーチの診断」が修正案を出します。</p>
     <div class="card">
       <ul class="routelist" id="routelist"></ul>
       <button class="pri" id="route-add">このルートを一括登録</button>
@@ -381,7 +381,7 @@
           <select id="b-subj"><option value="en">英語</option><option value="ma">数学</option><option value="es">小論文</option><option value="ot">その他</option></select></div>
         <div class="f"><label for="b-total">総量</label><input type="number" id="b-total" min="1" style="width:90px" placeholder="320"></div>
         <div class="f"><label for="b-unit">単位</label>
-          <select id="b-unit"><option>ページ</option><option>問</option><option>章</option><option>講</option><option>長文</option><option>年分</option></select></div>
+          <select id="b-unit"><option>ページ</option><option>問</option><option>章</option><option>講</option><option>長文</option><option>語</option><option>年分</option></select></div>
         <div class="f"><label for="b-due">目標完了日</label><input type="date" id="b-due"></div>
         <button class="pri" id="b-save">追加</button>
       </div>
@@ -1205,14 +1205,23 @@ function renderCal(){
 }
 
 /* ============ おすすめルート（A方式標準） ============ */
+// 息子さん専用ルート（手持ちの参考書＋慶應経済A方式の逆算）。総量は概算なので実物に合わせて調整OK
 const ROUTE = [
-  {name:"英単語帳（例：ターゲット1900）", subj:"en", total:1900, unit:"問", due:"2026-08-31", phase:"基礎", pc:"p1"},
-  {name:"英文法・語法問題集", subj:"en", total:300, unit:"問", due:"2026-08-31", phase:"基礎", pc:"p1"},
-  {name:"数学 網羅系問題集（例：青チャート例題）", subj:"ma", total:300, unit:"問", due:"2026-09-30", phase:"基礎", pc:"p1"},
-  {name:"英語長文問題集", subj:"en", total:30, unit:"長文", due:"2026-10-31", phase:"応用", pc:"p2"},
+  {name:"LEAP Basic（改訂版）", subj:"en", total:1000, unit:"語", due:"2026-07-31", phase:"基礎", pc:"p1"},
+  {name:"入門英文問題精講", subj:"en", total:72, unit:"問", due:"2026-08-20", phase:"基礎", pc:"p1"},
+  {name:"the essentials 語法必須英文100", subj:"en", total:100, unit:"問", due:"2026-08-31", phase:"基礎", pc:"p1"},
+  {name:"前置詞最強の教科書", subj:"en", total:250, unit:"ページ", due:"2026-08-31", phase:"基礎", pc:"p1"},
+  {name:"英文解釈ポラリス1", subj:"en", total:50, unit:"問", due:"2026-09-15", phase:"応用", pc:"p2"},
+  {name:"LEAP（改訂版・本体）", subj:"en", total:1400, unit:"語", due:"2026-09-30", phase:"基礎", pc:"p1"},
+  {name:"The Rules 長文 1・2", subj:"en", total:24, unit:"長文", due:"2026-09-30", phase:"応用", pc:"p2"},
+  {name:"数学 網羅系問題集（青チャート等・例題）", subj:"ma", total:300, unit:"問", due:"2026-09-30", phase:"基礎", pc:"p1"},
+  {name:"英文解釈ポラリス2", subj:"en", total:50, unit:"問", due:"2026-10-15", phase:"応用", pc:"p2"},
+  {name:"速読英熟語（改訂版）", subj:"en", total:60, unit:"章", due:"2026-10-31", phase:"基礎", pc:"p1"},
   {name:"小論文の書き方＋演習", subj:"es", total:150, unit:"ページ", due:"2026-10-31", phase:"応用", pc:"p2"},
+  {name:"The Rules 長文 3・4", subj:"en", total:24, unit:"長文", due:"2026-11-15", phase:"応用", pc:"p2"},
   {name:"数学 実戦演習（微積・確率・数列）", subj:"ma", total:150, unit:"問", due:"2026-11-30", phase:"応用", pc:"p2"},
-  {name:"自由英作文対策", subj:"en", total:60, unit:"ページ", due:"2026-11-30", phase:"応用", pc:"p2"},
+  {name:"イディオムマスター（まる暗記ゼロ）", subj:"en", total:300, unit:"ページ", due:"2026-11-30", phase:"応用", pc:"p2"},
+  {name:"自由英作文対策（1冊選定）", subj:"en", total:60, unit:"ページ", due:"2026-11-30", phase:"応用", pc:"p2"},
   {name:"過去問（英数小論セット）", subj:"ot", total:10, unit:"年分", due:"2027-02-05", phase:"直前", pc:"p3"}
 ];
 
@@ -1289,11 +1298,16 @@ function renderCoach(){
     }
   });
 
-  // 3) 同一科目の並行しすぎ
+  // 3) 同一科目の並行しすぎ（直近14日に手を付けた本だけ数える）
+  const cutoff = new Date(t); cutoff.setDate(cutoff.getDate()-14);
+  const cutStr = ymd(cutoff);
   const bySubj = {};
-  store.books.forEach(b=>{ const c=bookCalc(b); if(c.remaining>0) bySubj[b.subj]=(bySubj[b.subj]||0)+1; });
+  store.books.forEach(b=>{
+    const c = bookCalc(b);
+    if(c.remaining>0 && b.entries.some(e=>e.date>=cutStr)) bySubj[b.subj]=(bySubj[b.subj]||0)+1;
+  });
   Object.entries(bySubj).forEach(([s,n])=>{
-    if(n>=4) items.push({lv:"info", text:SUBJNAME[s]+"の参考書が"+n+"冊並行中。同時進行は2〜3冊までに絞ると完走率が上がります。"});
+    if(n>=4) items.push({lv:"info", text:SUBJNAME[s]+"の参考書を"+n+"冊同時に進めています。ルートの期限が近い順に2〜3冊へ絞ると完走率が上がります。"});
   });
 
   // 4) 科目バランス（直近14日・合計10時間以上で判定）
