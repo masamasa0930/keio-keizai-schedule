@@ -371,7 +371,7 @@
   <!-- ============ 参考書 ============ -->
   <section class="tab" id="tab-books">
     <h2>きみ専用ルート（手持ちの参考書で逆算済み）</h2>
-    <p class="note">手持ちの参考書を、試験日2/13から逆算した順番・期限で並べたルートです。「一括登録」を押せば準備完了。総量（語数・ページ数）は概算なので、実物と違ったら×で削除→正しい数で登録し直してOK。遅れが出たらホームの「コーチの診断」が修正案を出します。<br>
+    <p class="note">手持ちの参考書を、試験日2/13から逆算した順番・期限で並べたルートです。「一括登録」を押せば準備完了。総量（語数・ページ数）は概算なので、実物と違ったら各カードの「編集」で修正してOK（進捗は保持されます）。遅れが出たらホームの「コーチの診断」が修正案を出します。<br>
     <strong>※印は同時並行ペア</strong>（インプットで学んだことをアウトプットですぐ使う）。<br>
     <strong>辞書枠（ノルマ管理しない本）</strong>：数研教科書＝定義の確認用、マスターキー＝1対1の1周目後から並行して原則確認、真・英文法大全＝通読後は文法辞書。詰まったら戻る本なので、毎日のノルマには入れません。</p>
     <div class="card">
@@ -920,13 +920,43 @@ function renderBooks(){
     chip.style.background = SUBJCOLOR[b.subj] || "var(--ot)";
     const pill = document.createElement("span");
     pill.className = "pill " + PILL[c.status][0]; pill.textContent = PILL[c.status][1];
+    const editBtn = document.createElement("button");
+    editBtn.className = "ghost"; editBtn.textContent = "編集";
     const del = document.createElement("button");
     del.className = "del"; del.textContent = "×"; del.setAttribute("aria-label","参考書を削除");
     del.addEventListener("click", ()=>{
       if(confirm('「'+b.name+'」を削除しますか？')){ store.books.splice(i,1); save(); renderBooks(); renderHome(); }
     });
-    head.append(nm, chip, pill, del);
+    head.append(nm, chip, pill, editBtn, del);
     card.append(head);
+
+    // 編集フォーム（書名・総量・目標日を進捗を保ったまま変更）
+    const ed = document.createElement("div"); ed.className = "bupdate"; ed.style.display = "none";
+    const edName = document.createElement("input");
+    edName.type = "text"; edName.value = b.name; edName.style.flex = "1"; edName.style.minWidth = "140px";
+    edName.setAttribute("aria-label","書名");
+    const edTotal = document.createElement("input");
+    edTotal.type = "number"; edTotal.value = b.total; edTotal.min = 1;
+    edTotal.setAttribute("aria-label","総量");
+    const edUnit = document.createElement("span"); edUnit.style.fontSize = "12px"; edUnit.style.color = "var(--sub)";
+    edUnit.textContent = b.unit;
+    const edDue = document.createElement("input");
+    edDue.type = "date"; edDue.value = b.due;
+    edDue.setAttribute("aria-label","目標完了日");
+    const edSave = document.createElement("button"); edSave.className = "pri"; edSave.textContent = "保存";
+    edSave.addEventListener("click", ()=>{
+      const nv = edName.value.trim(), tv = +edTotal.value;
+      if(!nv || !tv || tv < 1 || !edDue.value) return;
+      logAdjust("「"+b.name+"」を編集（総量"+b.total+"→"+tv+b.unit+"、期限"+fmtMD(b.due)+"→"+fmtMD(edDue.value)+"）");
+      b.name = nv; b.total = tv; b.due = edDue.value;
+      b.entries.forEach(e=>{ e.pos = Math.min(e.pos, b.total); });
+      save(); renderBooks(); renderHome();
+    });
+    const edCancel = document.createElement("button"); edCancel.className = "ghost"; edCancel.textContent = "キャンセル";
+    edCancel.addEventListener("click", ()=>{ ed.style.display = "none"; });
+    ed.append(edName, edTotal, edUnit, edDue, edSave, edCancel);
+    editBtn.addEventListener("click", ()=>{ ed.style.display = ed.style.display==="none" ? "" : "none"; });
+    card.append(ed);
 
     const bar = document.createElement("div"); bar.className = "bar b6";
     bar.innerHTML = '<span style="width:'+Math.min(100, 100*c.pos/b.total)+'%;background:'+
