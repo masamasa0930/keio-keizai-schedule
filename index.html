@@ -1117,12 +1117,12 @@ function renderMocks(){
 }
 
 /* ============ 併願校 ============ */
+// 受験予定校（例年固定日からの予測）
 const PRESETS = [
-  {name:"慶應 商", exam:"2027-02-14"},
+  {name:"早稲田 法", exam:"2027-02-15"},
   {name:"慶應 総合政策", exam:"2027-02-17"},
-  {name:"慶應 環境情報", exam:"2027-02-18"},
-  {name:"早稲田 政治経済", exam:"2027-02-20"},
-  {name:"早稲田 商", exam:"2027-02-21"}
+  {name:"早稲田 商", exam:"2027-02-21"},
+  {name:"早稲田 社会科学", exam:"2027-02-22"}
 ];
 const presetBox = document.getElementById("presets");
 PRESETS.forEach(p=>{
@@ -1208,6 +1208,7 @@ function renderCal(){
 // 息子さん専用ルート（手持ちの参考書＋慶應経済A方式の逆算）。総量は概算なので実物に合わせて調整OK
 const ROUTE = [
   {name:"LEAP Basic（改訂版）", subj:"en", total:1000, unit:"語", due:"2026-07-31", phase:"基礎", pc:"p1"},
+  {name:"動画でわかる英文法 読解入門編", subj:"en", total:250, unit:"ページ", due:"2026-07-31", phase:"基礎", pc:"p1"},
   {name:"数研出版 教科書 章末問題 総ざらい（ⅠA・ⅡBC）", subj:"ma", total:240, unit:"問", due:"2026-08-10", phase:"基礎", pc:"p1"},
   {name:"入門英文問題精講", subj:"en", total:72, unit:"問", due:"2026-08-20", phase:"基礎", pc:"p1"},
   {name:"the essentials 語法必須英文100", subj:"en", total:100, unit:"問", due:"2026-08-31", phase:"基礎", pc:"p1"},
@@ -1226,7 +1227,8 @@ const ROUTE = [
   {name:"1対1対応の演習 数B・C（数列・ベクトル中心）", subj:"ma", total:150, unit:"問", due:"2026-11-15", phase:"応用", pc:"p2"},
   {name:"イディオムマスター（まる暗記ゼロ）", subj:"en", total:300, unit:"ページ", due:"2026-11-30", phase:"応用", pc:"p2"},
   {name:"自由英作文対策（1冊選定）", subj:"en", total:60, unit:"ページ", due:"2026-11-30", phase:"応用", pc:"p2"},
-  {name:"過去問（英数小論セット）", subj:"ot", total:10, unit:"年分", due:"2027-02-05", phase:"直前", pc:"p3"}
+  {name:"文系数学の良問プラチカ（ⅠAⅡB）", subj:"ma", total:149, unit:"問", due:"2026-12-31", phase:"直前", pc:"p3"},
+  {name:"過去問（慶應経済＋併願4校）", subj:"ot", total:10, unit:"年分", due:"2027-02-05", phase:"直前", pc:"p3"}
 ];
 
 function renderRoute(){
